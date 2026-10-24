@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+*.db
+.pytest_cache/
+encode.sh
+encode.log
+encode.done
+frontend/public/media/encode.done
