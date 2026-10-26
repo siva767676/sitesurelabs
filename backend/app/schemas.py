@@ -23,7 +23,7 @@ class EnquiryIn(BaseModel):
     name: Name
     email: EmailStr
     company: Company
-    interest: Literal["anviksha", "sitevision", "digi-reco", "progress-tracker", "custom-ai", "other"]
+    interest: Literal["anviksha", "sitevision", "digi-reco", "parichay", "progress-tracker", "custom-ai", "other"]
     message: Message
     budget: Literal["", "exploring", "small", "medium", "large"] = ""
     timeline: Literal["", "asap", "1-3m", "3-6m", "later"] = ""

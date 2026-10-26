@@ -1,18 +1,17 @@
 import { Seo } from '@/components/ui/Seo'
 import { Hero } from '@/components/home/Hero'
-import { Positioning } from '@/components/home/Positioning'
-import { EcosystemShowcase } from '@/components/home/EcosystemShowcase'
-import { Capabilities } from '@/components/home/Capabilities'
-import { ProblemSolution } from '@/components/home/ProblemSolution'
-import { WorkflowDeepDive } from '@/components/home/WorkflowDeepDive'
-import { Process } from '@/components/home/Process'
+import { ProductScroll } from '@/components/home/ProductScroll'
 import { WhySure } from '@/components/home/WhySure'
-import { SelectedWork } from '@/components/home/SelectedWork'
 import { Testimonials } from '@/components/ui/Testimonial'
 import { ContactPaths } from '@/components/home/ContactPaths'
 import { BrandClosing } from '@/components/brand/BrandClosing'
 import { site } from '@/data/site'
 
+/**
+ * Home: hero, product ecosystem, why us, start here, closing.
+ * Positioning, problem-to-solution, the deep dive, the engagement process and selected work are gone
+ * from this page: their content lives in the project details sheet and on the inner pages.
+ */
 export default function Home() {
   return (
     <>
@@ -20,17 +19,11 @@ export default function Home() {
         title="SiteSureLabs | AI Products & Enterprise Engineering"
         description={site.description}
         path="/"
-        jsonLd={{ '@context': 'https://schema.org', '@type': 'Organization', name: site.name, url: site.url, description: site.description }}
+        jsonLd={{ '@context': 'https://schema.org', '@type': 'Organization', name: site.name, url: site.url, logo: `${site.url}/brand/logo.svg`, description: site.description }}
       />
       <Hero />
-      <Positioning />
-      <EcosystemShowcase />
-      <Capabilities />
-      <ProblemSolution />
-      <WorkflowDeepDive />
-      <Process />
+      <ProductScroll />
       <WhySure />
-      <SelectedWork />
       <Testimonials />
       <ContactPaths />
       <BrandClosing />

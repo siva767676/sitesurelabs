@@ -3,6 +3,7 @@ import { PageHero } from '@/components/ui/PageHero'
 import { Reveal } from '@/components/ui/Reveal'
 import { DottedText } from '@/components/ui/DottedText'
 import { CtaBand } from '@/components/ui/CtaBand'
+import { AboutVisual } from '@/components/ui/PageVisuals'
 import { principles } from '@/data/site'
 import { liveProducts } from '@/data/products'
 import { Link } from 'react-router-dom'
@@ -15,6 +16,7 @@ export default function About() {
         eyebrow="About SiteSureLabs"
         lines={['Practical AI,', 'built as *product.*']}
         lead="We are an AI product company. We build software that sees, reads and reasons, and we run it on real work before we offer it to anyone else."
+        visual={<AboutVisual />}
       />
 
       {/* CONFIRM: mission and philosophy copy below is drafted from our product work and needs founder sign-off. */}
@@ -34,7 +36,7 @@ export default function About() {
         </div>
       </section>
 
-      <section className="section theme-light" aria-labelledby="prin-t">
+      <section className="section theme-invert" aria-labelledby="prin-t">
         <div className="container-x">
           <h2 id="prin-t" className="t-label mb-12">How we work</h2>
           <div className="grid gap-x-16 gap-y-12 md:grid-cols-2">
@@ -76,12 +78,12 @@ export default function About() {
             <div className="col-span-12 lg:col-span-5">
               <h2 id="team-t" className="t-label mb-8">Founder</h2>
               {/* CONFIRM: founder photo, name, title and bio. Replace this placeholder with the real portrait and copy. */}
-              <div className="flex aspect-[4/5] max-w-sm items-end rounded-[var(--radius-xl)] border border-dashed border-[var(--c-line-strong)] p-6">
+              <div className="flex aspect-[16/10] max-w-sm items-end rounded-[var(--radius-xl)] sm:aspect-[4/5] border border-dashed border-[var(--c-line-strong)] p-6">
                 <p className="t-caption">Founder portrait and biography to be added. No photo was found in the supplied assets.</p>
               </div>
             </div>
-            <div className="col-span-12 overflow-hidden lg:col-span-7" aria-hidden="true">
-              <DottedText size="clamp(3rem, 8vw, 8rem)">Practical<br />AI.</DottedText>
+            <div className="about-dots col-span-12 overflow-hidden lg:col-span-7" aria-hidden="true">
+              <DottedText size="1em">Practical<br />AI.</DottedText>
             </div>
           </div>
         </div>

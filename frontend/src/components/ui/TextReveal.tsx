@@ -52,7 +52,7 @@ export function TextReveal({ lines, as = 'h2', id, className = '', by = 'word', 
           <span key={i} className="block">
             {parse(l).map((w, wi) => (
               <Fragment key={wi}>
-                {w.map((t, ti) => (<span key={ti} className={t.accent ? 'text-[var(--c-accent)]' : ''}>{t.text}</span>))}{' '}
+                {w.map((t, ti) => (<span key={ti} className={t.accent ? 'text-[var(--color-accent-display)]' : ''}>{t.text}</span>))}{' '}
               </Fragment>
             ))}
           </span>
@@ -85,7 +85,7 @@ export function TextReveal({ lines, as = 'h2', id, className = '', by = 'word', 
                           return (
                             <motion.span
                               key={ci}
-                              className={`inline-block ${c.accent ? 'text-[var(--c-accent)]' : ''}`}
+                              className={`inline-block ${c.accent ? 'text-[var(--color-accent-display)]' : ''}`}
                               variants={{ hidden: { y: '112%', opacity: 0, rotate: 3 }, show: { y: '0%', opacity: 1, rotate: 0, transition: { duration: dur.slow, ease: ease.out, delay: d } } }}
                             >
                               {c.ch}
@@ -99,7 +99,7 @@ export function TextReveal({ lines, as = 'h2', id, className = '', by = 'word', 
                               className="inline-block"
                               variants={{ hidden: { y: '112%', opacity: 0 }, show: { y: '0%', opacity: 1, transition: { duration: dur.slow, ease: ease.out, delay: d } } }}
                             >
-                              {word.map((t, ti) => (<span key={ti} className={t.accent ? 'text-[var(--c-accent)]' : ''}>{t.text}</span>))}
+                              {word.map((t, ti) => (<span key={ti} className={t.accent ? 'text-[var(--color-accent-display)]' : ''}>{t.text}</span>))}
                             </motion.span>
                           )
                         })()}

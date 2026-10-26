@@ -31,18 +31,18 @@ export function HeroFallback({ className = '' }: { className?: string }) {
     <svg viewBox="0 0 600 600" className={className} role="img" aria-label="Abstract dotted globe network" preserveAspectRatio="xMidYMid meet">
       <defs>
         <radialGradient id="hf-glow" cx="50%" cy="50%" r="50%">
-          <stop offset="60%" stopColor="#58d5ff" stopOpacity="0" />
-          <stop offset="100%" stopColor="#58d5ff" stopOpacity="0.14" />
+          <stop offset="60%" style={{ stopColor: 'var(--color-brand)' }} stopOpacity="0" />
+          <stop offset="100%" style={{ stopColor: 'var(--color-brand)' }} stopOpacity="0.14" />
         </radialGradient>
       </defs>
       <circle cx="300" cy="300" r="250" fill="url(#hf-glow)" />
-      <ellipse cx="300" cy="300" rx="330" ry="110" fill="none" stroke="#58d5ff" strokeOpacity="0.25" transform="rotate(-18 300 300)" />
-      <ellipse cx="300" cy="300" rx="280" ry="70" fill="none" stroke="#536dff" strokeOpacity="0.22" transform="rotate(32 300 300)" />
-      {dots.map((d, i) => (<circle key={i} cx={d.x} cy={d.y} r={d.r} fill="#58d5ff" opacity={d.o} />))}
-      <path d="M210 230 Q300 120 400 210" fill="none" stroke="#58d5ff" strokeOpacity="0.6" />
-      <path d="M250 380 Q340 300 430 340" fill="none" stroke="#58d5ff" strokeOpacity="0.5" />
+      <ellipse cx="300" cy="300" rx="330" ry="110" fill="none" stroke="var(--color-brand)" strokeOpacity="0.3" transform="rotate(-18 300 300)" />
+      <ellipse cx="300" cy="300" rx="280" ry="70" fill="none" stroke="var(--color-accent-2)" strokeOpacity="0.22" transform="rotate(32 300 300)" />
+      {dots.map((d, i) => (<circle key={i} cx={d.x} cy={d.y} r={d.r} fill="var(--color-fg)" opacity={d.o} />))}
+      <path d="M210 230 Q300 120 400 210" fill="none" stroke="var(--color-brand)" strokeOpacity="0.75" />
+      <path d="M250 380 Q340 300 430 340" fill="none" stroke="var(--color-brand)" strokeOpacity="0.65" />
       {[[210, 230], [400, 210], [250, 380], [430, 340], [330, 270]].map(([x, y], i) => (
-        <circle key={i} cx={x} cy={y} r="4" fill="#fff" />
+        <circle key={i} cx={x} cy={y} r="4" fill="var(--color-brand)" />
       ))}
     </svg>
   )

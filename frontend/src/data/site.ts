@@ -15,10 +15,10 @@ export const site = {
 }
 
 export const nav = [
+  { label: 'Home', to: '/' },
   { label: 'Products', to: '/products' },
   { label: 'Services', to: '/services' },
   { label: 'About', to: '/about' },
-  { label: 'Insights', to: '/insights' },
   { label: 'Contact', to: '/contact' },
 ] as const
 
@@ -27,17 +27,19 @@ export const legalNav = [
   { label: 'Terms of Use', to: '/terms' },
 ] as const
 
+/** Engagement process (Services page): a label and one short line per step. */
 export const process = [
-  { n: '01', title: 'Frame', body: 'We start with the operational problem, not the model: who acts on the output, what decision it changes, and what good looks like.' },
-  { n: '02', title: 'Prototype', body: 'A working proof of concept on your real data, fast enough to learn from and honest about what it can and cannot do.' },
-  { n: '03', title: 'Build', body: 'Production engineering: APIs, interfaces, evaluation, security review and the integrations that make it usable inside your workflow.' },
-  { n: '04', title: 'Deploy', body: 'Containerised, observable deployments on your cloud or ours, with documentation and handover for your team.' },
-  { n: '05', title: 'Evolve', body: 'Measure real usage, tune the models and workflows, and extend the system as the operation changes.' },
+  { n: '01', title: 'Frame', body: 'Start from the problem, not the model.' },
+  { n: '02', title: 'Prototype', body: 'A working proof on your real data.' },
+  { n: '03', title: 'Build', body: 'Production code, integrations and evaluation.' },
+  { n: '04', title: 'Deploy', body: 'Containerised, observable and handed over.' },
+  { n: '05', title: 'Evolve', body: 'Measure usage, then tune and extend.' },
 ]
 
+/** CONFIRM: wording needs founder sign-off. One short line each. */
 export const principles = [
-  { title: 'Product-first', body: 'We run our own products in the field before we advise anyone else on theirs. That discipline shows up in every engagement.' },
-  { title: 'Practical AI', body: 'We choose the simplest approach that solves the problem. Sometimes that is a vision model; sometimes it is a better workflow.' },
-  { title: 'Built for operators', body: 'Interfaces designed for people on site, in stores and in review meetings, not for demos.' },
-  { title: 'End-to-end ownership', body: 'Models, backend, interface and deployment under one roof, so nothing is lost between teams.' },
+  { title: 'Product-first', body: 'We run our own products before advising on yours.' },
+  { title: 'Practical AI', body: 'The simplest approach that solves the problem.' },
+  { title: 'Built for operators', body: 'Designed for people on site, not for demos.' },
+  { title: 'End-to-end', body: 'Models, backend, interface and deployment together.' },
 ]

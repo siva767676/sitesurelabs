@@ -4,6 +4,7 @@ interface DottedTextProps {
   children: ReactNode
   /** CSS font-size, e.g. "clamp(3rem, 9vw, 9rem)" */
   size?: string
+  /** Dot colour; defaults to the theme's accent. */
   color?: string
   sweep?: boolean
   className?: string
@@ -15,8 +16,8 @@ interface DottedTextProps {
  * filled with a dot pattern via background-clip, so it stays crisp at any size and needs no canvas.
  * Intended for short display statements only.
  */
-export function DottedText({ children, size = 'clamp(3rem, 9vw, 9rem)', color = '#58d5ff', sweep = true, className = '', as: Tag = 'span' }: DottedTextProps) {
-  const style = { fontSize: size, '--dot-color': color } as CSSProperties
+export function DottedText({ children, size = 'clamp(3rem, 9vw, 9rem)', color, sweep = true, className = '', as: Tag = 'span' }: DottedTextProps) {
+  const style = { fontSize: size, ...(color ? { '--dot-color': color } : {}) } as CSSProperties
   return (
     <Tag className={`dotted ${sweep ? 'dotted--sweep' : ''} ${className}`} style={style}>
       {children}

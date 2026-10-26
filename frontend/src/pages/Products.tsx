@@ -1,18 +1,19 @@
 import { Seo } from '@/components/ui/Seo'
 import { PageHero } from '@/components/ui/PageHero'
 import { CtaBand } from '@/components/ui/CtaBand'
+import { ProductsVisual } from '@/components/ui/PageVisuals'
 import { PlannedProduct, ProductFeature } from '@/components/product/ProductFeature'
 import { products, getProduct } from '@/data/products'
 import { site } from '@/data/site'
 
 export default function Products() {
-  const anviksha = getProduct('anviksha')!, sitevision = getProduct('sitevision')!, digi = getProduct('digi-reco')!
+  const anviksha = getProduct('anviksha')!, sitevision = getProduct('sitevision')!, digi = getProduct('digi-reco')!, parichay = getProduct('parichay')!
   const planned = products.filter((p) => p.status === 'planned')
   return (
     <>
       <Seo
-        title="AI Products for Construction"
-        description="Anviksha, SiteVision and Digi Reco: AI products from SiteSureLabs for construction quality inspection, 360° site capture and steel reconciliation."
+        title="Products for Construction"
+        description="Anviksha, SiteVision, Digi Reco and Parichay: products from SiteSureLabs for construction quality inspection, 360° site capture, steel reconciliation and worker entry passes."
         path="/products"
         jsonLd={{
           '@context': 'https://schema.org', '@type': 'ItemList',
@@ -22,13 +23,15 @@ export default function Products() {
       <PageHero
         eyebrow="Products"
         lines={['Software that', 'sees, reads and', '*reasons.*']}
-        lead="Our own AI products, built around specific operational problems in construction and shown here on their real screens. Explore any product, or ask for a demonstration."
+        lead="Our own products, built around specific operational problems in construction and shown here on their real screens. Explore any product, or ask for a demonstration."
+        visual={<ProductsVisual />}
       />
       <section className="section !pt-8" aria-label="Product catalogue">
-        <div className="container-x space-y-[clamp(96px,14vw,220px)]">
+        <div className="container-x space-y-[clamp(72px,14vw,220px)]">
           <ProductFeature product={anviksha} layout="landscape" />
           <ProductFeature product={sitevision} layout="tall" />
-          <div className="pb-8"><ProductFeature product={digi} layout="band" /></div>
+          <ProductFeature product={digi} layout="band" />
+          <div className="pb-8"><ProductFeature product={parichay} layout="landscape" /></div>
           {planned.map((p) => <PlannedProduct key={p.slug} product={p} />)}
         </div>
       </section>

@@ -51,6 +51,14 @@ def test_valid_enquiry_is_stored_and_listed(client):
     assert "ip_hash" not in rows[0]
 
 
+@pytest.mark.parametrize("interest", ["anviksha", "sitevision", "digi-reco", "parichay", "progress-tracker", "custom-ai", "other"])
+def test_every_product_can_be_the_interest(client, interest):
+    r = post(client, interest=interest, message=f"We would like to talk about {interest} for our sites.")
+    assert r.status_code == 201
+    rows = client.get("/api/admin/enquiries", headers={"Authorization": "Bearer secret-token"}).json()
+    assert rows[0]["interest"] == interest
+
+
 def test_duplicate_submission_is_idempotent(client):
     a, b = post(client), post(client)
     assert a.status_code == b.status_code == 201 and a.json()["id"] == b.json()["id"]

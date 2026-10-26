@@ -48,5 +48,8 @@ export function Button(props: AsLink | AsAnchor | AsButton) {
       </button>
     )
   }
-  return magnetic ? <Magnetic>{el}</Magnetic> : el
+  // the magnetic wrapper must take the button's width rules too ("w-full sm:w-auto"), or it stays full width on desktop
+  // and pushes the next button in the row onto its own line
+  const widths = className.split(/\s+/).filter((c) => /^(?:[a-z0-9]+:)*w-/.test(c)).join(' ')
+  return magnetic ? <Magnetic className={widths}>{el}</Magnetic> : el
 }

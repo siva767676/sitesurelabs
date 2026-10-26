@@ -1,15 +1,37 @@
 /** JS mirror of the CSS design tokens (src/styles/global.css) for canvas / WebGL / motion code. */
 
-export const palette = {
-  bg: '#070B14',
-  bg2: '#0D1320',
-  surface: '#111A2B',
-  fg: '#F4F7FB',
-  muted: '#9BA9BC',
-  accent: '#58D5FF',
-  accent2: '#536DFF',
-  paper: '#EEF2F7',
-  ink: '#0A1020',
+/** Brand colours per theme: the same values as the "Colour palettes" blocks in global.css. */
+export const palettes = {
+  dark: {
+    bg: '#141619',
+    bg2: '#1A1D21',
+    surface: '#22252A',
+    fg: '#F4F1EC',
+    muted: '#ADB1B7',
+    accent: '#F47A3C',
+    brand: '#F06623',
+    accent2: '#8F969E',
+  },
+  light: {
+    bg: '#F7F4EF',
+    bg2: '#EFEAE3',
+    surface: '#FFFFFF',
+    fg: '#22252A',
+    muted: '#565B62',
+    accent: '#B8400B',
+    brand: '#F06623',
+    accent2: '#6D737A',
+  },
+} as const
+
+/**
+ * Hero globe, per theme. Dark paints light onto a dark page, so layers add up (additive blending): warm
+ * off-white land dots with an orange network. Light paints ink onto a light page, where adding light would
+ * vanish, so layers composite normally: charcoal land dots, the same orange network, a dark node core.
+ */
+export const globe = {
+  dark: { cool: '#3a3f47', land: '#d8d3ca', hot: palettes.dark.brand, rim: palettes.dark.accent2, core: '#ffffff', additive: true, wire: 0.07, ringA: 0.3, ringB: 0.22 },
+  light: { cool: '#b9bcc0', land: '#3b3f45', hot: palettes.light.brand, rim: palettes.light.accent2, core: '#22252a', additive: false, wire: 0.13, ringA: 0.5, ringB: 0.34 },
 } as const
 
 export const ease = {

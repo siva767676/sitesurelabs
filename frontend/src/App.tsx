@@ -9,8 +9,6 @@ const Products = lazy(() => import('@/pages/Products'))
 const ProductDetail = lazy(() => import('@/pages/ProductDetail'))
 const Services = lazy(() => import('@/pages/Services'))
 const About = lazy(() => import('@/pages/About'))
-const Insights = lazy(() => import('@/pages/Insights'))
-const InsightDetail = lazy(() => import('@/pages/InsightDetail'))
 const Contact = lazy(() => import('@/pages/Contact'))
 const Legal = lazy(() => import('@/pages/Legal'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
@@ -26,8 +24,6 @@ export default function App() {
             <Route path="products/:slug" element={<ProductDetail />} />
             <Route path="services" element={<Services />} />
             <Route path="about" element={<About />} />
-            <Route path="insights" element={<Insights />} />
-            <Route path="insights/:slug" element={<InsightDetail />} />
             <Route path="contact" element={<Contact />} />
             <Route path="privacy" element={<Legal doc="privacy" />} />
             <Route path="terms" element={<Legal doc="terms" />} />

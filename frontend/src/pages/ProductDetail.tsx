@@ -9,11 +9,14 @@ import { Reveal } from '@/components/ui/Reveal'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 import { ImageReveal } from '@/components/ui/ImageReveal'
 import { Accordion } from '@/components/ui/Accordion'
+import { SwipeList } from '@/components/ui/SwipeList'
 import { VideoDialog } from '@/components/ui/VideoDialog'
 import { CtaBand } from '@/components/ui/CtaBand'
 import { getProduct, products } from '@/data/products'
 import { site } from '@/data/site'
 import { ease } from '@/design/tokens'
+import { accentVars } from '@/lib/accent'
+import { stillSet } from '@/lib/images'
 import NotFound from './NotFound'
 
 /** Reusable product template: everything on this page is driven by data/products.ts. */
@@ -43,27 +46,27 @@ export default function ProductDetail() {
       />
 
       {/* hero */}
-      <section className="relative isolate overflow-hidden pb-20 pt-[calc(var(--header-h)+clamp(48px,8vw,112px))]">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10" style={{ background: `radial-gradient(60% 70% at 80% 20%, ${p.accent}2b, transparent 70%), radial-gradient(40% 40% at 10% 100%, ${p.accent}14, transparent 70%)` }} />
+      <section className="relative isolate overflow-hidden pb-12 pt-[calc(var(--header-h)+clamp(32px,8vw,112px))] md:pb-20">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10" style={{ background: `radial-gradient(60% 70% at 80% 20%, ${p.accent}2b, transparent 70%), radial-gradient(40% 40% at 10% 100%, ${p.accent}14, transparent 70%)`, opacity: 'var(--glow-k)' }} />
         <div className="container-x">
           <nav aria-label="Breadcrumb" className="t-label mb-10 flex items-center gap-3">
-            <Link to="/products" className="hover:text-[var(--c-fg)]">Products</Link><span aria-hidden="true">/</span><span className="text-[var(--c-fg)]">{p.name}</span>
+            <Link to="/products" className="tap hover:text-[var(--c-fg)]">Products</Link><span aria-hidden="true">/</span><span className="text-[var(--c-fg)]">{p.name}</span>
           </nav>
           <div className="grid-12 items-center gap-y-12">
             <div className="col-span-12 lg:col-span-6">
-              <p className="t-label mb-6" style={{ color: p.accent }}>{p.category}</p>
+              <p className="t-label accent-scope mb-6 text-[var(--accent-ink)]" style={accentVars(p.accent)}>{p.category}</p>
               <TextReveal as="h1" by="char" immediate lines={[p.name]} className="t-display !text-[clamp(3.25rem,1rem+9vw,9.5rem)]" />
               <motion.p className="mt-7 font-display text-[clamp(1.5rem,1.1rem+1.6vw,2.6rem)] font-medium leading-[1.1] tracking-tight" initial={reduced ? false : { opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.9, ease: ease.out }}>{p.tagline}</motion.p>
               <motion.p className="t-lead mt-6" initial={reduced ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7, duration: 0.9 }}>{p.summary}</motion.p>
-              <motion.div className="mt-9 flex flex-wrap gap-3" initial={reduced ? false : { opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.85, duration: 0.9, ease: ease.out }}>
-                <Button to={`/contact?type=${planned ? 'general' : 'demo'}&product=${p.slug}`} variant="primary" arrow magnetic>{planned ? 'Register interest' : 'Request a demo'}</Button>
-                {p.media.demoVideo && <Button variant="secondary" onClick={() => setVideo(true)}><Play size={14} fill="currentColor" aria-hidden="true" className="mr-1 inline" /> Watch the demo</Button>}
+              <motion.div className="mt-8 grid gap-3 sm:mt-9 sm:flex sm:flex-wrap" initial={reduced ? false : { opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.85, duration: 0.9, ease: ease.out }}>
+                <Button to={`/contact?type=${planned ? 'general' : 'demo'}&product=${p.slug}`} variant="primary" arrow magnetic className="w-full sm:w-auto">{planned ? 'Register interest' : 'Request a demo'}</Button>
+                {p.media.demoVideo && <Button variant="secondary" className="w-full sm:w-auto" onClick={() => setVideo(true)}><Play size={14} fill="currentColor" aria-hidden="true" className="mr-1 inline" /> Watch the demo</Button>}
               </motion.div>
             </div>
             <div className="col-span-12 lg:col-span-6">
               {hasShots ? (
                 <motion.div initial={reduced ? false : { opacity: 0, scale: 0.96, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ delay: 0.3, duration: 1.2, ease: ease.out }} className="shot !rounded-[var(--radius-xl)]">
-                  <img src={p.media.cover} alt={p.media.coverAlt} width={1920} height={1080} fetchPriority="high" decoding="async" className="w-full object-cover" style={{ aspectRatio: '16 / 10', objectPosition: p.media.focus ?? '50% 0%' }} />
+                  <img src={p.media.cover} {...stillSet(p.media.cover)} sizes="(min-width: 1024px) 48vw, 92vw" alt={p.media.coverAlt} width={1920} height={1080} fetchPriority="high" decoding="async" className="w-full object-cover" style={{ aspectRatio: '16 / 10', objectPosition: p.media.focus ?? '50% 0%' }} />
                 </motion.div>
               ) : (
                 <div className="flex aspect-[16/10] flex-col items-start justify-between rounded-[var(--radius-xl)] border border-dashed border-[var(--c-line-strong)] p-8">
@@ -96,7 +99,7 @@ export default function ProductDetail() {
       </section>
 
       {/* problem & solution */}
-      <section className="section theme-light mt-[var(--section-y)]" aria-labelledby="ps-title">
+      <section className="section theme-invert mt-[var(--section-y)]" aria-labelledby="ps-title">
         <div className="container-x">
           <h2 id="ps-title" className="sr-only">Problem and solution</h2>
           <div className="grid-12 gap-y-14">
@@ -118,10 +121,10 @@ export default function ProductDetail() {
       <section className="section" aria-labelledby="cap-t">
         <div className="container-x">
           <SectionHeading titleId="cap-t" eyebrow="Key capabilities" lines={['What it does.']} />
-          <ul className="mt-16 grid border-t border-[var(--c-line)] md:grid-cols-2 md:gap-x-16">
+          <ul className="mt-10 grid border-t border-[var(--c-line)] md:mt-16 md:grid-cols-2 md:gap-x-16">
             {p.capabilities.map((c, i) => (
-              <Reveal as="li" key={c.title} delay={(i % 2) * 0.08} className="grid grid-cols-[3rem_1fr] gap-x-4 border-b border-[var(--c-line)] py-8">
-                <span className="t-label pt-1.5" style={{ color: p.accent }}>{String(i + 1).padStart(2, '0')}</span>
+              <Reveal as="li" key={c.title} delay={(i % 2) * 0.08} className="grid grid-cols-[2.25rem_1fr] gap-x-3 border-b border-[var(--c-line)] py-6 sm:grid-cols-[3rem_1fr] sm:gap-x-4 md:py-8">
+                <span className="t-label accent-scope pt-1.5 text-[var(--accent-ink)]" style={accentVars(p.accent)}>{String(i + 1).padStart(2, '0')}</span>
                 <div><h3 className="t-h3 !text-[clamp(1.25rem,1.05rem+0.8vw,1.75rem)] mb-2">{c.title}</h3><p className="t-body">{c.body}</p></div>
               </Reveal>
             ))}
@@ -133,19 +136,19 @@ export default function ProductDetail() {
       <section className="section section--raised" aria-labelledby="wf-t">
         <div className="container-x">
           <SectionHeading titleId="wf-t" eyebrow="Product workflow" lines={['How it works.']} />
-          <ol className="mt-16 grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+          <SwipeList as="ol" label="Workflow steps" className="mt-10 md:mt-16" itemClass="w-[82%] sm:w-[52%]" grid="md:grid md:grid-cols-2 md:gap-10 lg:grid-cols-4">
             {p.workflow.map((w, i) => {
               const shot = w.shot !== undefined ? p.media.shots[w.shot] : undefined
               return (
-                <Reveal as="li" key={w.title} delay={i * 0.08}>
-                  {shot && <div className="shot mb-6"><ImageReveal src={shot.src} alt={shot.alt} ratio="16 / 10" position="50% 8%" /></div>}
-                  <p className="t-label mb-3" style={{ color: p.accent }}>Step {i + 1}</p>
+                <Reveal delay={i * 0.08}>
+                  {shot && <div className="shot mb-5 md:mb-6"><ImageReveal src={shot.src} alt={shot.alt} ratio="16 / 10" position="50% 8%" sizes="(min-width: 1024px) 22vw, (min-width: 768px) 44vw, (min-width: 640px) 50vw, 80vw" /></div>}
+                  <p className="t-label accent-scope mb-3 text-[var(--accent-ink)]" style={accentVars(p.accent)}>Step {i + 1}</p>
                   <h3 className="t-h3 mb-3">{w.title}</h3>
                   <p className="t-body">{w.body}</p>
                 </Reveal>
               )
             })}
-          </ol>
+          </SwipeList>
         </div>
       </section>
 
@@ -153,26 +156,26 @@ export default function ProductDetail() {
       {hasShots && (
         <section className="section" aria-labelledby="sh-t">
           <div className="container-x">
-            <SectionHeading titleId="sh-t" eyebrow="Application screens" lines={['The real product.']} lead="Frames from our product demonstration. Figures shown are demo data, not performance results." align="split" />
-            <div className="mt-16 grid gap-6 md:grid-cols-2">
+            <SectionHeading titleId="sh-t" eyebrow="Application screens" lines={['The real product.']} lead="Frames from our product demonstration. They are not performance results." align="split" />
+            <SwipeList label="Application screens" className="mt-10 md:mt-16" itemClass="w-[88%] sm:w-[60%]" grid="md:grid md:grid-cols-2 md:gap-6">
               {p.media.shots.map((s, i) => (
-                <Reveal key={s.src} kind="clipUp" delay={(i % 2) * 0.08}>
+                <Reveal kind="clipUp" delay={(i % 2) * 0.08}>
                   <figure className="m-0">
-                    <div className="shot"><ImageReveal src={s.src} alt={s.alt} ratio="16 / 10" position="50% 6%" /></div>
+                    <div className="shot"><ImageReveal src={s.src} alt={s.alt} ratio="16 / 10" position="50% 6%" sizes="(min-width: 768px) 45vw, (min-width: 640px) 56vw, 80vw" /></div>
                     <figcaption className="t-caption mt-3">{s.caption}</figcaption>
                   </figure>
                 </Reveal>
               ))}
-            </div>
+            </SwipeList>
           </div>
         </section>
       )}
 
       {/* value */}
-      <section className="section theme-light" aria-labelledby="val-t">
+      <section className="section theme-invert" aria-labelledby="val-t">
         <div className="container-x">
           <SectionHeading titleId="val-t" eyebrow="Business value" lines={['Why it matters.']} />
-          <div className="mt-16 grid gap-10 md:grid-cols-3">
+          <div className="mt-10 grid gap-8 md:mt-16 md:grid-cols-3 md:gap-10">
             {p.value.map((v, i) => (
               <Reveal key={v.title} delay={i * 0.08} className="border-t-2 border-[var(--c-fg)] pt-6">
                 <h3 className="t-h3 mb-3">{v.title}</h3>
@@ -187,7 +190,7 @@ export default function ProductDetail() {
         <section className="section" aria-labelledby="dep-t">
           <div className="container-x">
             <SectionHeading titleId="dep-t" eyebrow="Integrations & deployment" lines={['Fits your stack.']} />
-            <ul className="mt-12 grid gap-4 md:grid-cols-2">{p.deployment.map((d) => <li key={d} className="surface p-6">{d}</li>)}</ul>
+            <ul className="mt-10 grid gap-4 md:mt-12 md:grid-cols-2">{p.deployment.map((d) => <li key={d} className="surface p-6">{d}</li>)}</ul>
           </div>
         </section>
       )}

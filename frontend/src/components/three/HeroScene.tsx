@@ -1,17 +1,19 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { PerformanceMonitor } from '@react-three/drei'
 import * as THREE from 'three'
-import { palette } from '@/design/tokens'
+import { globe } from '@/design/tokens'
+import type { Theme } from '@/lib/theme'
 
 /**
  * Hero visual: an abstract "planet of intelligence". A dotted sphere (halftone landmasses from a
  * noise field, deliberately not real geography), glowing network nodes, light-trail arcs between
  * them and two thin orbit rings. Pure points/lines with custom shaders: no textures, no models,
- * so the whole scene is a few draw calls.
+ * so the whole scene is a few draw calls. Colours and blending follow the theme (see `globe` in
+ * design/tokens.ts): light on dark adds up, ink on light composites normally.
  */
 
-interface SceneProps { count: number; interactive: boolean; paused: boolean }
+interface SceneProps { count: number; interactive: boolean; paused: boolean; theme: Theme }
 
 const R = 1
 
@@ -92,15 +94,15 @@ const nodeVert = /* glsl */ `
     gl_Position = projectionMatrix * mv;
   }`
 const nodeFrag = /* glsl */ `
-  uniform vec3 uColor; varying float vP; varying float vF;
+  uniform vec3 uColor; uniform vec3 uCore; varying float vP; varying float vF;
   void main(){
     vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) discard;
     float core = smoothstep(0.14, 0.0, d); float halo = smoothstep(0.5, 0.1, d) * (0.35 + vP * 0.3);
     float vis = smoothstep(-0.35, 0.25, vF);
-    gl_FragColor = vec4(mix(uColor, vec3(1.0), core), (core + halo) * vis);
+    gl_FragColor = vec4(mix(uColor, uCore, core), (core + halo) * vis);
   }`
 
-function Globe({ count, interactive, paused }: SceneProps) {
+function Globe({ count, interactive, paused, theme }: SceneProps) {
   const group = useRef<THREE.Group>(null)
   const ring1 = useRef<THREE.Mesh>(null)
   const ring2 = useRef<THREE.Mesh>(null)
@@ -118,8 +120,14 @@ function Globe({ count, interactive, paused }: SceneProps) {
   }, [interactive])
 
   const px = Math.min(window.devicePixelRatio || 1, 2)
-  const cool = useMemo(() => new THREE.Color('#2b3f66'), [])
-  const hot = useMemo(() => new THREE.Color(palette.accent), [])
+  const look = globe[theme]
+  // One Color object per role, shared with the shader uniforms: changing the theme only mutates them,
+  // so the next frame picks the new colours up without rebuilding any geometry or material.
+  const [cool] = useState(() => new THREE.Color(look.cool))
+  const [hot] = useState(() => new THREE.Color(look.hot))
+  const [landColor] = useState(() => new THREE.Color(look.land))
+  const [core] = useState(() => new THREE.Color(look.core))
+  useEffect(() => { cool.set(look.cool); landColor.set(look.land); hot.set(look.hot); core.set(look.core) }, [look, cool, landColor, hot, core])
 
   const dots = useMemo(() => {
     const pts = fib(count)
@@ -178,10 +186,10 @@ function Globe({ count, interactive, paused }: SceneProps) {
   }, [])
 
   const uniforms = useMemo(() => ({
-    pts: { uTime: { value: 0 }, uPx: { value: px }, uCool: { value: cool }, uHot: { value: hot } },
+    pts: { uTime: { value: 0 }, uPx: { value: px }, uCool: { value: cool }, uHot: { value: landColor } },
     arc: { uTime: { value: 0 }, uColor: { value: hot } },
-    node: { uTime: { value: 0 }, uPx: { value: px }, uColor: { value: hot } },
-  }), [px, cool, hot])
+    node: { uTime: { value: 0 }, uPx: { value: px }, uColor: { value: hot }, uCore: { value: core } },
+  }), [px, cool, landColor, hot, core])
 
   useEffect(() => () => { dots.dispose(); arcs.dispose(); nodes.dispose() }, [dots, arcs, nodes])
 
@@ -200,7 +208,7 @@ function Globe({ count, interactive, paused }: SceneProps) {
     if (ring2.current) ring2.current.rotation.z -= dt * 0.035
   })
 
-  const mat = { transparent: true, depthWrite: false, blending: THREE.AdditiveBlending } as const
+  const mat = { transparent: true, depthWrite: false, blending: look.additive ? THREE.AdditiveBlending : THREE.NormalBlending } as const
 
   return (
     <group ref={group} rotation={[0.32, -0.6, 0.12]}>
@@ -215,23 +223,23 @@ function Globe({ count, interactive, paused }: SceneProps) {
       </points>
       <mesh>
         <icosahedronGeometry args={[R * 1.035, 3]} />
-        <meshBasicMaterial wireframe color={palette.accent2} transparent opacity={0.07} depthWrite={false} />
+        <meshBasicMaterial wireframe color={look.rim} transparent opacity={look.wire} depthWrite={false} />
       </mesh>
       <mesh ref={ring1} rotation={[1.25, 0.2, 0]}>
         <torusGeometry args={[R * 1.42, 0.0035, 6, 220]} />
-        <meshBasicMaterial color={palette.accent} transparent opacity={0.28} depthWrite={false} />
+        <meshBasicMaterial color={look.hot} transparent opacity={look.ringA} depthWrite={false} />
       </mesh>
       <mesh ref={ring2} rotation={[1.9, -0.5, 0.4]}>
         <torusGeometry args={[R * 1.7, 0.0025, 6, 220]} />
-        <meshBasicMaterial color={palette.accent2} transparent opacity={0.22} depthWrite={false} />
+        <meshBasicMaterial color={look.rim} transparent opacity={look.ringB} depthWrite={false} />
       </mesh>
     </group>
   )
 }
 
-interface HeroSceneProps { mobile: boolean; paused: boolean; onReady: () => void; onFail: () => void }
+interface HeroSceneProps { mobile: boolean; paused: boolean; theme: Theme; onReady: () => void; onFail: () => void }
 
-export default function HeroScene({ mobile, paused, onReady, onFail }: HeroSceneProps) {
+export default function HeroScene({ mobile, paused, theme, onReady, onFail }: HeroSceneProps) {
   const dprMax = useRef(mobile ? 1.25 : 1.75)
   return (
     <Canvas
@@ -248,7 +256,7 @@ export default function HeroScene({ mobile, paused, onReady, onFail }: HeroScene
       aria-hidden="true"
     >
       <PerformanceMonitor onDecline={() => { dprMax.current = 1 }} />
-      <Globe count={mobile ? 2600 : 6200} interactive={!mobile} paused={paused} />
+      <Globe count={mobile ? 2600 : 6200} interactive={!mobile} paused={paused} theme={theme} />
     </Canvas>
   )
 }

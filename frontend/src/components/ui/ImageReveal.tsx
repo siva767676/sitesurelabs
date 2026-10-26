@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { ease } from '@/design/tokens'
+import { stillSet } from '@/lib/images'
 
 interface ImageRevealProps {
   src: string
@@ -9,6 +10,8 @@ interface ImageRevealProps {
   ratio?: string
   position?: string
   priority?: boolean
+  /** How wide the image is drawn (a `sizes` attribute). Gives phones the smaller files; leave out for heavy crops. */
+  sizes?: string
   className?: string
   /** controlled zoom on hover */
   zoom?: boolean
@@ -17,7 +20,7 @@ interface ImageRevealProps {
 }
 
 /** Image with a clip-path reveal, controlled settle-zoom, loading skeleton and intentional crop. */
-export function ImageReveal({ src, alt, ratio = '16 / 10', position = '50% 50%', priority, className = '', zoom = true, width = 1920, height = 1080 }: ImageRevealProps) {
+export function ImageReveal({ src, alt, ratio = '16 / 10', position = '50% 50%', priority, sizes, className = '', zoom = true, width = 1920, height = 1080 }: ImageRevealProps) {
   const reduced = useReducedMotion()
   const [loaded, setLoaded] = useState(false)
   return (
@@ -32,6 +35,7 @@ export function ImageReveal({ src, alt, ratio = '16 / 10', position = '50% 50%',
       {!loaded && <div aria-hidden="true" className="absolute inset-0 animate-pulse bg-[var(--color-surface-2)]" />}
       <motion.img
         src={src}
+        {...(sizes ? { ...stillSet(src), sizes } : {})}
         alt={alt}
         width={width}
         height={height}

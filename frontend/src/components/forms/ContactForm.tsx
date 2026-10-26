@@ -21,7 +21,7 @@ function Field({ id, label, optional, error, children }: { id: string; label: st
   return (
     <div>
       <label htmlFor={id} className="mb-2 flex items-baseline justify-between text-[0.9rem] font-medium">
-        {label}{optional && <span className="t-label !text-[0.65rem]">Optional</span>}
+        {label}{optional && <span className="t-label">Optional</span>}
       </label>
       {children}
       {error && <p id={`${id}-err`} role="alert" className="mt-2 flex items-center gap-1.5 text-[0.85rem] text-[var(--color-signal)]"><AlertCircle size={14} aria-hidden="true" />{error}</p>}
@@ -29,7 +29,7 @@ function Field({ id, label, optional, error, children }: { id: string; label: st
   )
 }
 
-const control = 'w-full min-h-[52px] rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-bg-2)] px-4 text-base text-[var(--color-fg)] placeholder:text-[var(--color-faint)] transition-colors hover:border-[var(--color-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/30 aria-[invalid=true]:border-[var(--color-signal)]'
+const control = 'w-full min-h-[52px] rounded-[var(--radius-md)] border border-[var(--color-field-line)] bg-[var(--color-field)] px-4 text-base text-[var(--color-fg)] placeholder:text-[var(--color-faint)] transition-colors hover:border-[var(--color-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/30 aria-[invalid=true]:border-[var(--color-signal)]'
 
 export function ContactForm() {
   const [params] = useSearchParams()
@@ -102,19 +102,19 @@ export function ContactForm() {
       <fieldset disabled={busy} className="m-0 min-w-0 space-y-6 border-0 p-0">
         <legend className="sr-only">Contact form</legend>
 
-        <div role="radiogroup" aria-label="Type of enquiry" className="flex flex-wrap gap-2">
+        <div role="radiogroup" aria-label="Type of enquiry" className="grid gap-2 sm:flex sm:flex-wrap">
           {kinds.map((k) => (
             <label key={k.value} className="cursor-pointer">
               <input type="radio" value={k.value} {...register('kind')} className="peer sr-only" />
-              <span className="chip min-h-[44px] px-5 normal-case tracking-normal transition-colors peer-checked:border-[var(--color-accent)] peer-checked:bg-[var(--color-accent)]/10 peer-checked:text-[var(--color-fg)] peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--color-accent)]">{k.label}</span>
+              <span className="chip min-h-[48px] w-full justify-center px-5 normal-case tracking-normal transition-colors sm:min-h-[44px] sm:w-auto peer-checked:border-[var(--color-accent)] peer-checked:bg-[var(--color-accent)]/10 peer-checked:text-[var(--color-fg)] peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--color-accent)]">{k.label}</span>
             </label>
           ))}
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <Field id="name" label="Name" error={errors.name?.message}><input id="name" autoComplete="name" className={control} {...d('name')} {...register('name')} /></Field>
-          <Field id="email" label="Business email" error={errors.email?.message}><input id="email" type="email" autoComplete="email" inputMode="email" className={control} {...d('email')} {...register('email')} /></Field>
-          <Field id="company" label="Company" error={errors.company?.message}><input id="company" autoComplete="organization" className={control} {...d('company')} {...register('company')} /></Field>
+          <Field id="name" label="Name" error={errors.name?.message}><input id="name" autoComplete="name" autoCapitalize="words" enterKeyHint="next" className={control} {...d('name')} {...register('name')} /></Field>
+          <Field id="email" label="Business email" error={errors.email?.message}><input id="email" type="email" autoComplete="email" inputMode="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="next" className={control} {...d('email')} {...register('email')} /></Field>
+          <Field id="company" label="Company" error={errors.company?.message}><input id="company" autoComplete="organization" autoCapitalize="words" enterKeyHint="next" className={control} {...d('company')} {...register('company')} /></Field>
           <Field id="interest" label="Product or service of interest" error={errors.interest?.message}>
             <select id="interest" className={control} {...d('interest')} {...register('interest')}>
               <option value="" disabled>Select one…</option>
@@ -142,7 +142,7 @@ export function ContactForm() {
 
         <div>
           <label className="flex cursor-pointer items-start gap-3 text-[0.9rem] text-[var(--color-muted)]">
-            <input type="checkbox" className="mt-1 h-5 w-5 shrink-0 accent-[var(--color-accent)]" {...d('consent')} {...register('consent')} />
+            <input type="checkbox" className="mt-0.5 h-6 w-6 shrink-0 accent-[var(--color-accent)]" {...d('consent')} {...register('consent')} />
             <span>I have read the <Link to="/privacy" className="text-[var(--color-fg)] underline underline-offset-4 hover:text-[var(--color-accent)]">privacy notice</Link> and agree that SiteSureLabs may use these details to respond to my enquiry.</span>
           </label>
           {errors.consent && <p id="consent-err" role="alert" className="mt-2 flex items-center gap-1.5 text-[0.85rem] text-[var(--color-signal)]"><AlertCircle size={14} aria-hidden="true" />{errors.consent.message}</p>}
@@ -155,8 +155,8 @@ export function ContactForm() {
         </div>
       )}
 
-      <div className="mt-8 flex flex-wrap items-center gap-5">
-        <Button type="submit" variant="primary" arrow loading={busy}>{busy ? 'Sending…' : 'Send message'}</Button>
+      <div className="mt-8 grid gap-4 sm:flex sm:flex-wrap sm:items-center sm:gap-5">
+        <Button type="submit" variant="primary" arrow loading={busy} className="w-full sm:w-auto">{busy ? 'Sending…' : 'Send message'}</Button>
         <p className="t-caption max-w-[34ch]">We reply to business enquiries personally, usually within two working days.</p>
       </div>
     </form>

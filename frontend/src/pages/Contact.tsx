@@ -1,6 +1,7 @@
 import { Seo } from '@/components/ui/Seo'
 import { PageHero } from '@/components/ui/PageHero'
 import { ContactForm } from '@/components/forms/ContactForm'
+import { ContactVisual } from '@/components/ui/PageVisuals'
 import { site } from '@/data/site'
 
 const steps = [
@@ -12,12 +13,12 @@ const steps = [
 export default function Contact() {
   return (
     <>
-      <Seo title="Contact & Request a Demo" description="Request a demo of Anviksha, SiteVision or Digi Reco, or discuss a custom AI project with SiteSureLabs." path="/contact" />
-      <PageHero eyebrow="Contact" lines={['Start a', 'conversation.']} lead="Request a product demonstration or tell us about a project. We read every enquiry and reply personally." />
+      <Seo title="Contact & Request a Demo" description="Request a demo of Anviksha, SiteVision, Digi Reco or Parichay, or discuss a custom AI project with SiteSureLabs." path="/contact" />
+      <PageHero eyebrow="Contact" lines={['Start a', 'conversation.']} lead="Request a product demonstration or tell us about a project. We read every enquiry and reply personally." visual={<ContactVisual />} />
       <section className="pb-[var(--section-y)]" aria-label="Enquiry form">
         <div className="container-x">
-          <div className="grid-12 gap-y-14">
-            <aside className="col-span-12 lg:col-span-4">
+          <div className="grid-12 gap-y-12 lg:gap-y-14">
+            <aside className="order-2 col-span-12 lg:order-none lg:col-span-4">
               <div className="lg:sticky lg:top-[calc(var(--header-h)+32px)]">
                 <p className="t-label mb-6">What happens next</p>
                 <ol className="space-y-6">
@@ -28,13 +29,13 @@ export default function Contact() {
                     </li>
                   ))}
                 </ol>
-                <div className="mt-12 border-t border-[var(--c-line)] pt-8">
+                <div className="mt-10 border-t border-[var(--c-line)] pt-6 lg:mt-12 lg:pt-8">
                   <p className="t-label mb-3">Prefer email?</p>
                   <a href={`mailto:${site.email}`} className="link-arrow">{site.email}</a>
                 </div>
               </div>
             </aside>
-            <div className="col-span-12 lg:col-span-8"><ContactForm /></div>
+            <div className="order-1 col-span-12 lg:order-none lg:col-span-8"><ContactForm /></div>
           </div>
         </div>
       </section>

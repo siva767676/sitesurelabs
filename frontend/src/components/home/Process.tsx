@@ -6,7 +6,7 @@ import { ease } from '@/design/tokens'
 export function Process() {
   const reduced = useReducedMotion()
   return (
-    <section className="section theme-light" aria-labelledby="proc-title">
+    <section className="section theme-invert" aria-labelledby="proc-title">
       <div className="container-x">
         <SectionHeading titleId="proc-title" index="05" eyebrow="Enterprise engagement" lines={['How we work', 'with you.']} lead="A clear path from first conversation to a system in production, with working software at every stage." align="split" />
 

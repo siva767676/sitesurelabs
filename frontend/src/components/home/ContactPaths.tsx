@@ -1,31 +1,78 @@
 import { Link } from 'react-router-dom'
-import { ArrowUpRight } from 'lucide-react'
+import { motion, useReducedMotion } from 'motion/react'
+import { ArrowRight } from 'lucide-react'
 import { Reveal } from '@/components/ui/Reveal'
+import { TextReveal } from '@/components/ui/TextReveal'
+import { ease } from '@/design/tokens'
 
+/** blobs: which glow colour (a or b, see --glow-a / --glow-b) and how strong, for the two drifting lights. */
 const paths = [
-  { to: '/contact?type=demo', label: 'Request a product demo', body: 'See Anviksha, SiteVision or Digi Reco working on a real workflow.', tag: 'Products' },
-  { to: '/contact?type=project', label: 'Discuss a custom build', body: 'Tell us the problem. We will tell you honestly whether and how AI can solve it.', tag: 'Engineering' },
-]
+  { to: '/contact?type=demo', tag: 'Products', title: 'Request a demo', line: 'See a product on your workflow.', from: 'left', blobs: [['a', 0.5], ['b', 0.55]] },
+  { to: '/contact?type=project', tag: 'Engineering', title: 'Discuss a project', line: 'Bring us a problem worth solving.', from: 'right', blobs: [['b', 0.6], ['a', 0.4]] },
+] as const
 
+function Path({ p }: { p: (typeof paths)[number] }) {
+  const reduced = useReducedMotion()
+  const hidden = p.from === 'left' ? 'inset(0 100% 0 0 round 32px)' : 'inset(0 0 0 100% round 32px)'
+
+  const onMove = (e: React.PointerEvent<HTMLAnchorElement>) => {
+    if (e.pointerType !== 'mouse') return
+    const r = e.currentTarget.getBoundingClientRect()
+    e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`)
+    e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`)
+  }
+
+  return (
+    <motion.div
+      className="group/p transition-transform duration-500 ease-[var(--ease-out)] hover:-translate-y-1"
+      initial={reduced ? false : { clipPath: hidden }}
+      whileInView={{ clipPath: 'inset(0 0% 0 0% round 32px)' }}
+      viewport={{ once: true, margin: '0px 0px -12% 0px' }}
+      transition={{ duration: 1.1, ease: ease.inOut }}
+    >
+      <Link
+        to={p.to}
+        onPointerMove={onMove}
+        className="theme-root spot ring-border relative flex min-h-[290px] flex-col justify-between overflow-hidden rounded-[var(--radius-xl)] bg-[var(--color-card)] p-7 text-[var(--color-fg)] md:min-h-[400px] md:p-10"
+      >
+        {/* drifting light, a faint dot grid, and (on hover) a rotating border and cursor spotlight */}
+        <span aria-hidden="true" className="pointer-events-none absolute -left-1/4 -top-1/3 h-[120%] w-[80%] animate-[drift-a_16s_ease-in-out_infinite] rounded-full opacity-70 blur-3xl will-change-transform max-md:animate-none max-md:blur-2xl" style={{ background: `radial-gradient(closest-side, rgb(var(--glow-${p.blobs[0][0]}) / calc(${p.blobs[0][1]} * var(--glow-k))), transparent)` }} />
+        <span aria-hidden="true" className="pointer-events-none absolute -bottom-1/2 -right-[10%] h-[120%] w-[75%] animate-[drift-b_20s_ease-in-out_infinite] rounded-full opacity-60 blur-3xl will-change-transform max-md:animate-none max-md:blur-2xl" style={{ background: `radial-gradient(closest-side, rgb(var(--glow-${p.blobs[1][0]}) / calc(${p.blobs[1][1]} * var(--glow-k))), transparent)` }} />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-70"
+          style={{ backgroundImage: 'radial-gradient(color-mix(in srgb, var(--color-fg) 16%, transparent) 1px, transparent 1.3px)', backgroundSize: '22px 22px', WebkitMaskImage: 'radial-gradient(75% 95% at 85% 15%, #000, transparent 78%)', maskImage: 'radial-gradient(75% 95% at 85% 15%, #000, transparent 78%)' }}
+        />
+
+        <span className="relative flex items-start justify-between">
+          <span className="t-label !text-[var(--color-accent)]">{p.tag}</span>
+          <span className="flex h-14 w-14 items-center justify-center rounded-full border border-[var(--color-line-strong)] transition-all duration-500 group-hover/p:border-transparent group-hover/p:bg-[var(--color-brand)] group-hover/p:text-[var(--color-on-brand)]">
+            <ArrowRight size={22} className="transition-transform duration-500 group-hover/p:-rotate-45" aria-hidden="true" />
+          </span>
+        </span>
+        <span className="relative">
+          <span className="block font-display text-[clamp(2.25rem,1.2rem+3.4vw,4rem)] font-medium leading-none tracking-[-0.04em]">{p.title}</span>
+          <span className="mt-3 block max-w-[28ch] text-[var(--color-muted)]">{p.line}</span>
+        </span>
+      </Link>
+    </motion.div>
+  )
+}
+
+/** Start here: two ways in, as two large panels. */
 export function ContactPaths() {
   return (
-    <section className="section theme-light !py-[calc(var(--section-y)*0.7)]" aria-labelledby="paths-title">
+    <section className="section theme-invert !py-[clamp(56px,9vw,128px)]" aria-labelledby="start-title">
       <div className="container-x">
-        <h2 id="paths-title" className="t-label mb-10">Start here</h2>
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          {paths.map((p, i) => (
-            <Reveal key={p.to} delay={i * 0.1}>
-              <Link to={p.to} className="group relative flex min-h-[280px] flex-col justify-between overflow-hidden rounded-[var(--radius-xl)] bg-[var(--color-ink)] p-8 text-white transition-transform duration-500 hover:-translate-y-1 md:p-10">
-                <span aria-hidden="true" className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[var(--color-accent-2)] opacity-0 blur-3xl transition-opacity duration-700 group-hover:opacity-40" />
-                <span className="t-label !text-[var(--color-accent)]">{p.tag}</span>
-                <span>
-                  <span className="block font-display text-[clamp(1.75rem,1.2rem+2vw,3rem)] font-medium leading-[1.05] tracking-[-0.035em]">{p.label}</span>
-                  <span className="mt-4 block max-w-[38ch] text-[var(--color-muted)]">{p.body}</span>
-                </span>
-                <ArrowUpRight aria-hidden="true" className="absolute right-8 top-8 transition-transform duration-500 group-hover:-translate-y-1 group-hover:translate-x-1" size={28} />
-              </Link>
-            </Reveal>
-          ))}
+        <Reveal>
+          <p className="t-label mb-5 flex items-center gap-3">
+            <span aria-hidden="true" className="h-px w-8 bg-[var(--c-line-strong)]" />
+            Get in touch
+          </p>
+        </Reveal>
+        <TextReveal as="h2" id="start-title" lines={['Start *here.*']} className="t-h1" />
+        <div className="mt-10 grid gap-4 md:mt-12 md:grid-cols-2 md:gap-6">
+          {paths.map((p) => <Path key={p.to} p={p} />)}
         </div>
       </div>
     </section>

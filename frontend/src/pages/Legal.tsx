@@ -1,4 +1,6 @@
-import { Info } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { ArrowUpRight, Info } from 'lucide-react'
 import { Seo } from '@/components/ui/Seo'
 import { site } from '@/data/site'
 
@@ -39,25 +41,77 @@ const docs: Record<Doc, { title: string; updated: string; intro: string; section
   },
 }
 
+const slug = (h: string) => h.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+
 export default function Legal({ doc }: { doc: Doc }) {
   const d = docs[doc]
+  const other = doc === 'privacy' ? { label: 'Terms of Use', to: '/terms' } : { label: 'Privacy Policy', to: '/privacy' }
+  const [active, setActive] = useState(slug(d.sections[0].h))
+
+  // the index follows the section being read
+  useEffect(() => {
+    setActive(slug(d.sections[0].h))
+    const els = d.sections.map((s) => document.getElementById(slug(s.h))).filter(Boolean) as HTMLElement[]
+    const io = new IntersectionObserver(
+      (entries) => { const hit = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0]; if (hit) setActive(hit.target.id) },
+      { rootMargin: '-20% 0px -65% 0px' },
+    )
+    els.forEach((el) => io.observe(el))
+    return () => io.disconnect()
+  }, [d])
+
   return (
     <>
       <Seo title={d.title} description={d.intro} path={`/${doc}`} />
       <article className="pb-[var(--section-y)] pt-[calc(var(--header-h)+clamp(48px,8vw,112px))]">
         <div className="container-x">
-          <p className="t-label mb-6">Legal</p>
-          <h1 className="t-h1 !text-[clamp(2.5rem,1.4rem+4vw,4.5rem)]">{d.title}</h1>
-          <p className="t-caption mt-4">{d.updated}</p>
-          <div role="note" className="mt-8 flex max-w-2xl items-start gap-3 rounded-[var(--radius-md)] border border-[var(--c-line-strong)] p-4 text-[var(--fs-caption)] text-[var(--c-muted)]"><Info size={18} className="mt-0.5 shrink-0 text-[var(--c-accent)]" aria-hidden="true" />This document is a draft for legal review. Bracketed items need confirmation before launch.</div>
-          <div className="mt-14 max-w-3xl">
-            <p className="t-lead !max-w-none">{d.intro}</p>
-            {d.sections.map((s) => (
-              <section key={s.h} className="mt-12 border-t border-[var(--c-line)] pt-8">
-                <h2 className="t-h3 mb-4">{s.h}</h2>
-                {s.p.map((t) => <p key={t} className="t-body mb-4 !max-w-none">{t}</p>)}
-              </section>
-            ))}
+          <div className="grid-12 gap-y-12">
+            <div className="col-span-12 lg:col-span-7">
+              <p className="t-label mb-6">Legal</p>
+              <h1 className="t-h1 !text-[clamp(2.5rem,1.4rem+4vw,4.5rem)]">{d.title}</h1>
+              <p className="t-caption mt-4">{d.updated}</p>
+              <div role="note" className="mt-8 flex max-w-2xl items-start gap-3 rounded-[var(--radius-md)] border border-[var(--c-line-strong)] p-4 text-[var(--fs-caption)] text-[var(--c-muted)]"><Info size={18} className="mt-0.5 shrink-0 text-[var(--c-accent)]" aria-hidden="true" />This document is a draft for legal review. Bracketed items need confirmation before launch.</div>
+              <div className="mt-14">
+                <p className="t-lead !max-w-none">{d.intro}</p>
+                {d.sections.map((s) => (
+                  <section key={s.h} id={slug(s.h)} className="mt-12 scroll-mt-28 border-t border-[var(--c-line)] pt-8">
+                    <h2 className="t-h3 mb-4">{s.h}</h2>
+                    {s.p.map((t) => <p key={t} className="t-body mb-4 !max-w-none">{t}</p>)}
+                  </section>
+                ))}
+              </div>
+            </div>
+
+            {/* beside the text: where you are, and the way out */}
+            <aside aria-label="About this document" className="hidden lg:col-span-4 lg:col-start-9 lg:block">
+              <div className="sticky top-[calc(var(--header-h)+32px)] space-y-5">
+                <nav aria-label="On this page" className="rounded-[var(--radius-lg)] border border-[var(--c-line)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-soft)]">
+                  <p className="t-label mb-4">On this page</p>
+                  <ol className="space-y-1">
+                    {d.sections.map((s, i) => {
+                      const on = active === slug(s.h)
+                      return (
+                        <li key={s.h}>
+                          <a href={`#${slug(s.h)}`} aria-current={on ? 'location' : undefined} className={`group flex items-baseline gap-3 rounded-md px-2 py-2 text-[0.95rem] transition-colors ${on ? 'text-[var(--c-fg)]' : 'text-[var(--c-muted)] hover:text-[var(--c-fg)]'}`}>
+                            <span className={`t-label w-6 shrink-0 transition-colors ${on ? '!text-[var(--c-accent)]' : ''}`}>0{i + 1}</span>
+                            <span className="relative">
+                              {s.h}
+                              <span aria-hidden="true" className={`absolute -bottom-0.5 left-0 h-px w-full origin-left bg-[var(--color-accent)] transition-transform duration-500 ${on ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
+                            </span>
+                          </a>
+                        </li>
+                      )
+                    })}
+                  </ol>
+                </nav>
+                <div className="rounded-[var(--radius-lg)] border border-[var(--c-line)] p-6">
+                  <p className="t-label mb-3">Questions</p>
+                  <a href={`mailto:${site.email}`} className="link-arrow">{site.email}</a>
+                  <p className="t-label mb-3 mt-6">Also</p>
+                  <Link to={other.to} className="link-arrow">{other.label}<ArrowUpRight size={14} aria-hidden="true" /></Link>
+                </div>
+              </div>
+            </aside>
           </div>
         </div>
       </article>

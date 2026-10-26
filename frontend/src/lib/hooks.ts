@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore, type KeyboardEvent } from 'react'
 import { queries } from '@/design/tokens'
 
 export function useMediaQuery(query: string): boolean {
@@ -42,9 +42,24 @@ export function webglAvailable(): boolean {
 
 /** Heuristic: should we skip the heavy 3D scene entirely? */
 export function isLowPowerDevice(): boolean {
-  const nav = navigator as Navigator & { connection?: { saveData?: boolean }; deviceMemory?: number }
+  const nav = navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string }; deviceMemory?: number }
   if (nav.connection?.saveData) return true
+  if (nav.connection?.effectiveType && /^(slow-2g|2g|3g)$/.test(nav.connection.effectiveType)) return true // a ~250 kB chunk for decoration
   if (typeof nav.hardwareConcurrency === 'number' && nav.hardwareConcurrency <= 2) return true
   if (typeof nav.deviceMemory === 'number' && nav.deviceMemory <= 2) return true
   return false
+}
+
+/** Roving-tabindex keyboard handling for a tablist: arrows move, Home/End jump. */
+export function useRovingTabs(count: number, active: number, setActive: (i: number) => void) {
+  const refs = useRef<(HTMLButtonElement | null)[]>([])
+  const onKeyDown = (e: KeyboardEvent) => {
+    const k = e.key
+    if (!['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(k)) return
+    e.preventDefault()
+    const next = k === 'Home' ? 0 : k === 'End' ? count - 1 : (active + (k === 'ArrowDown' || k === 'ArrowRight' ? 1 : -1) + count) % count
+    setActive(next)
+    refs.current[next]?.focus()
+  }
+  return { refs, onKeyDown }
 }

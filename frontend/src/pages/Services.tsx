@@ -3,6 +3,7 @@ import { PageHero } from '@/components/ui/PageHero'
 import { ServiceCard } from '@/components/ui/ServiceCard'
 import { CtaBand } from '@/components/ui/CtaBand'
 import { Process } from '@/components/home/Process'
+import { ServicesVisual } from '@/components/ui/PageVisuals'
 import { services } from '@/data/services'
 
 export default function Services() {
@@ -17,10 +18,10 @@ export default function Services() {
         eyebrow="AI & engineering services"
         lines={['Your technology', 'partner for', '*custom AI.*']}
         lead="Beyond our own products, we build bespoke AI and software for organisations that need something shaped around how they operate."
-        glow="#58d5ff"
+        visual={<ServicesVisual />}
       >
         <div className="max-w-xl rounded-[var(--radius-md)] border border-[var(--c-line-strong)] p-5 text-[var(--fs-caption)] text-[var(--c-muted)]">
-          <strong className="font-medium text-[var(--c-fg)]">Products or services?</strong> Anviksha, SiteVision and Digi Reco are ready-to-use products. The services below are custom engagements, built for your specific problem.
+          <strong className="font-medium text-[var(--c-fg)]">Products or services?</strong> Anviksha, SiteVision, Digi Reco and Parichay are ready-to-use products. The services below are custom engagements, built for your specific problem.
         </div>
       </PageHero>
 

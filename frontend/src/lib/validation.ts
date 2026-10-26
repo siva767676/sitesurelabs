@@ -11,6 +11,7 @@ export const interests = [
   { value: 'anviksha', label: 'Anviksha: AI construction inspection' },
   { value: 'sitevision', label: 'SiteVision: 360° site capture' },
   { value: 'digi-reco', label: 'Digi Reco: steel reconciliation' },
+  { value: 'parichay', label: 'Parichay: worker registration and entry passes' },
   { value: 'progress-tracker', label: 'Progress Tracker (in development)' },
   { value: 'custom-ai', label: 'Custom AI / software engineering' },
   { value: 'other', label: 'Something else' },

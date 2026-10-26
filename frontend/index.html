@@ -3,9 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#070B14" />
+    <meta name="theme-color" content="#141619" />
     <meta name="color-scheme" content="dark light" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>SiteSureLabs | AI Products & Enterprise Engineering</title>
     <meta name="description" content="SiteSureLabs builds AI-powered products and intelligent systems for enterprises: computer vision, document intelligence, LLM applications and workflow automation." />
     <link rel="canonical" href="https://sitesurelabs.com" />
@@ -15,15 +17,21 @@
     <meta property="og:description" content="AI-powered products and intelligent systems that help businesses see more clearly, work smarter and turn complex problems into actionable outcomes." />
     <meta property="og:url" content="https://sitesurelabs.com" />
     <meta property="og:image" content="https://sitesurelabs.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="SiteSureLabs: intelligence engineered for the real world." />
     <meta name="twitter:card" content="summary_large_image" />
-    <style>html{background:#070B14}body{margin:0;background:#070B14}</style>
+    <!-- Applies the saved theme before first paint so there is no flash. Its SHA-256 is allow-listed in nginx.conf's
+         Content-Security-Policy; scripts/postbuild.mjs fails the build if the two drift apart. Keep it on one line. -->
+    <script>(function(){var t='dark';try{var s=localStorage.getItem('ssl-theme');if(s==='light'||s==='dark')t=s}catch(e){}document.documentElement.setAttribute('data-theme',t);if(t==='light'){var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content','#F7F4EF')}})()</script>
+    <style>html{background:#141619;color-scheme:dark}html[data-theme=light]{background:#F7F4EF;color-scheme:light}body{margin:0}</style>
   </head>
   <body>
     <div id="root"></div>
     <noscript>
-      <div style="padding:40px;font-family:system-ui;color:#F4F7FB;background:#070B14">
+      <div style="padding:40px;font-family:system-ui;color:#F4F1EC;background:#141619">
         <h1>SiteSureLabs</h1>
-        <p>AI-powered products and custom AI engineering. Products: Anviksha, SiteVision, Digi Reco. Please enable JavaScript to view this site, or contact us at hello@sitesurelabs.com.</p>
+        <p>AI-powered products and custom AI engineering. Products: Anviksha, SiteVision, Digi Reco, Parichay. Please enable JavaScript to view this site, or contact us at hello@sitesurelabs.com.</p>
       </div>
     </noscript>
     <script type="module" src="/src/main.tsx"></script>

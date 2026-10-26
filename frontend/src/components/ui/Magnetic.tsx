@@ -23,8 +23,10 @@ export function Magnetic({ children, strength = 0.28, className = '' }: { childr
   const reset = () => { x.set(0); y.set(0) }
 
   if (!enabled) return <div className={`inline-block ${className}`}>{children}</div>
+  // the padding is the hover halo; a full-width button has no room for it (below sm, when it goes full width)
+  const halo = !/(^|\s)w-full(\s|$)/.test(className) ? 'p-3 -m-3' : /(^|\s)sm:w-auto(\s|$)/.test(className) ? 'sm:p-3 sm:-m-3' : ''
   return (
-    <div ref={ref} className={`inline-block p-3 -m-3 ${className}`} onPointerMove={onMove} onPointerLeave={reset}>
+    <div ref={ref} className={`inline-block ${halo} ${className}`} onPointerMove={onMove} onPointerLeave={reset}>
       <motion.div style={{ x: sx, y: sy }}>{children}</motion.div>
     </div>
   )

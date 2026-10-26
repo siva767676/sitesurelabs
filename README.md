@@ -1,12 +1,12 @@
 # SiteSureLabs.com
 
-Marketing site for **SiteSureLabs**, an AI product company (Anviksha, SiteVision, Digi Reco) that also builds custom AI and software for enterprises.
+Marketing site for **SiteSureLabs**, an AI product company (Anviksha, SiteVision, Digi Reco, Parichay) that also builds custom AI and software for enterprises.
 
 - **Frontend** (`frontend/`): React 19 + TypeScript + Vite, Tailwind CSS v4, Motion for React, GSAP ScrollTrigger, Three.js / React Three Fiber.
 - **Backend** (`backend/`): FastAPI + Pydantic + SQLAlchemy. Handles contact / demo / project enquiries.
 - **Deployment** (`docker-compose.yml`): nginx (static site + `/api` proxy) → FastAPI → PostgreSQL.
 
-Everything on the site is derived from the three product demo recordings supplied by the company. Nothing is invented: unconfirmed facts are marked `CONFIRM` in code and listed in [Open items](#open-items-needing-real-assets-credentials-or-confirmation).
+Everything on the site is derived from the four product demo recordings supplied by the company. Nothing is invented: unconfirmed facts are marked `CONFIRM` in code and listed in [Open items](#open-items-needing-real-assets-credentials-or-confirmation).
 
 ---
 
@@ -30,7 +30,7 @@ npm run dev
 
 | Command (in `frontend/`) | What it does |
 | --- | --- |
-| `npm run dev` | Vite dev server with `/api` proxy |
+| `npm run dev` | Vite dev server with `/api` proxy (point it elsewhere with `API_PROXY=http://127.0.0.1:8001 npm run dev`). To share it through a tunnel such as ngrok, the hostname must be allowed: the current ngrok host is built in, and others can be added with `ALLOWED_HOSTS=your-name.ngrok-free.dev npm run dev` (comma-separated). Vite otherwise answers `403 Blocked request` |
 | `npm run typecheck` | `tsc -b --noEmit` |
 | `npm run lint` | ESLint (React hooks rules included) |
 | `npm run build` | Type-check, production build, then `scripts/postbuild.mjs` |
@@ -67,24 +67,25 @@ sitesurelabs/
     ├── index.html  nginx.conf  Dockerfile  .env.example
     ├── scripts/
     │   ├── postbuild.mjs       per-route HTML + sitemap + 404
-    │   └── encode-media.sh     rebuilds public/media from the 4K recordings
-    ├── public/                 favicon, robots.txt, og-image.png, media/ (stills, loops, demo videos)
+    │   └── encode-media.sh     rebuilds public/media from the 4K recordings (and the 960 / 1280 px copies of the stills); a recording that is missing is skipped
+    ├── brand/                  logo-source.jpg: the supplied logo artwork the vector logo was traced from
+    ├── public/                 brand/ (logo SVGs), favicon, apple-touch icon, robots.txt, og-image.png, media/ (stills, demo videos)
     └── src/
         ├── design/tokens.ts    JS mirror of the design tokens
-        ├── styles/global.css   design tokens (@theme), type scale, buttons, dotted type
-        ├── lib/                hooks, motion presets, API client, Zod schema
-        ├── data/               products, services, insights, testimonials, site (structured content)
+        ├── styles/global.css   design tokens (@theme), colour palettes (dark and light), type scale, buttons, dotted type
+        ├── lib/                theme (light/dark), responsive images, hooks, motion presets, API client, Zod schema
+        ├── data/               products, services, testimonials, site (structured content)
         ├── components/
         │   ├── layout/         Header, mobile drawer, Footer, Layout
-        │   ├── brand/          Logo (TEMPORARY wordmark), BrandClosing
+        │   ├── brand/          Logo (the supplied logo as theme-aware SVG), logo-data (its traced paths), BrandClosing
         │   ├── three/          HeroScene (WebGL), HeroFallback (SVG)
-        │   ├── home/           Hero, Positioning, EcosystemShowcase, Capabilities, ProblemSolution,
-        │   │                   WorkflowDeepDive, Process, WhySure, SelectedWork, ContactPaths
-        │   ├── product/        ProductFeature, CaseStudyTile
+        │   ├── home/           Hero, ProductScroll, WhySure, ContactPaths ("Start here"),
+        │   │                   Process (used by the Services page)
+        │   ├── product/        ProductSheet (project details), ProductFeature, CaseStudyTile
         │   ├── forms/          ContactForm, Turnstile
         │   └── ui/             Button, Magnetic, Reveal, TextReveal, DottedText, ImageReveal, SectionHeading,
-        │                       PageHero, CtaBand, Accordion, VideoDialog, ServiceCard, Testimonial, Seo, States
-        └── pages/              Home, Products, ProductDetail, Services, About, Insights, InsightDetail,
+        │                       PageHero, CtaBand, Accordion, VideoDialog, ServiceCard, SwipeList, Testimonial, ThemeToggle, Seo, States
+        └── pages/              Home, Products, ProductDetail, Services, About,
                                 Contact, Legal (privacy/terms), NotFound
 ```
 
@@ -96,19 +97,105 @@ sitesurelabs/
 
 | Route | Page |
 | --- | --- |
-| `/` | Home: hero, positioning, product ecosystem, capabilities, problem→solution, scroll-driven workflow, process, principles, product demos, contact paths, animated brand closing, footer |
+| `/` | Home: hero, product ecosystem (scroll-driven, with project details), why SiteSureLabs, start here, animated brand closing |
 | `/products` | Product catalogue with a different composition per product (landscape, tall, full-width band) |
 | `/products/:slug` | Reusable product template, driven entirely by `src/data/products.ts` |
 | `/services` | Eight custom-engineering services, each with outcome, capabilities and a use-case CTA |
 | `/about` | Philosophy, principles, product-first, founder placeholder |
-| `/insights`, `/insights/:slug` | Templates for case studies, engineering articles, product updates (placeholders, `noindex`) |
 | `/contact` | Functional enquiry form (demo / project / general), pre-filled from `?type=&product=&service=` |
-| `/privacy`, `/terms` | Drafts for legal review |
+| `/privacy`, `/terms` | Drafts for legal review, with a sticky "On this page" index (it follows the section being read) and a contact card beside the text |
 | `*` | Custom 404 |
+
+### The homepage
+
+Five blocks: hero, product ecosystem, why SiteSureLabs, start here, and the animated brand closing. The sections that were removed (Who we are, From problem to solution, the Anviksha deep dive, Enterprise engagement, Selected works) are not repeated elsewhere on the home page: the deep dive now lives in each project's details sheet, and the process row is still on the Services page.
+
+| Section | What it is |
+| --- | --- |
+| **Product ecosystem** (`ProductScroll`) | A sticky stage scrubbed by GSAP ScrollTrigger: as you scroll, the product name, copy and screen change. A rail (01–04) shows progress and jumps to a product. The one-word **Details** label opens that project's full details. Phones and tablets get a swipeable card carousel; reduced-motion users get a static grid. |
+| **Project details** (`ProductSheet`) | Native `<dialog>`: problem → solution, audience, four key capabilities, and the former deep dive as a clickable Capture → Locate → Analyse → Report walkthrough over the real screens. Focus is trapped, Esc closes, the page behind is locked. Links to the demo video, the demo request form and the full product page. |
+| **Why SiteSureLabs** (`WhySure`) | Four reasons, one line each. The row at the middle of the screen lights up as you scroll (line draws, icon draws, cursor spotlight on hover). |
+| **Start here** (`ContactPaths`) | The page's contrast band (light in dark mode, dark in light mode): two panels (demo, project) with drifting light, a dot grid, a rotating conic border and a cursor spotlight on hover. |
+
+Content for all of it comes from `src/data/products.ts` and `src/data/site.ts`. Keep the copy short: a product has a one-sentence `blurb`, four `highlights` and four key `capabilities` (the details sheet shows the first four).
 
 ### Design system
 
-Tokens live in one place: `src/styles/global.css` (`@theme` and `:root`), mirrored for JS in `src/design/tokens.ts`. They cover colour, type scale (fluid `clamp()`), 8 px spacing, layout widths, radii, shadows, motion durations and easings, z-index layers and breakpoints. Dark-first with light "paper" sections (`.theme-light`) where detail needs contrast. Fonts: Space Grotesk (headings), Inter (body), JetBrains Mono (technical labels), all self-hosted via Fontsource.
+Tokens live in one place: `src/styles/global.css` (`@theme`, `:root` and the colour palettes), mirrored for JS in `src/design/tokens.ts`. They cover colour, type scale (fluid `clamp()`), 8 px spacing, layout widths, radii, shadows, motion durations and easings, z-index layers and breakpoints. Dark by default, with a light theme (below) and contrast bands (`.theme-invert`) where detail needs contrast. Fonts: Space Grotesk (headings), Inter (body), JetBrains Mono (technical labels), all self-hosted via Fontsource.
+
+### Page layout
+
+Every section sits in one container (`.container-x`): content at most 1680 px wide (`--container-max`) between gutters of 20 to 56 px (`--gutter`), centred. Up to about 1790 px the content simply fills the screen; beyond that the margins grow evenly on both sides. A 1920 px screen has about 110 px each side (the earlier 1360 px container left 270 px) and nothing is pushed to one side.
+
+The hero globe is placed against that container, not against the edge of the screen (`.hero-globe` in `global.css`, from 1024 px). Its sphere ends at the content edge, the same line as the header button and the product strip. It is sized to fit beside the headline and between the header and the product strip (at most 920 px), and it is never cut off. The four small annotations around it show from 1280 px, where there is room for them; below 1024 px the globe is centred behind the copy.
+
+Paired buttons (hero, call-to-action bands, product pages) sit side by side from 640 px and stack at full width below it. `Button` passes its width classes (`w-full sm:w-auto`) on to the magnetic wrapper; without that the wrapper stayed full width on desktop and pushed the second button onto its own line.
+
+**Interior page heroes.** From 1024 px each interior page puts something beside its headline instead of leaving the right side empty (`PageHero`'s `visual` slot, components in `src/components/ui/PageVisuals.tsx`): Products shows its three real product screens layered; Services shows a live index of the eight services (it lights down to the one being read and jumps to it); About shows the logo with the four working principles around it; Contact shows a signal leaving the mark, with the email. Privacy and Terms get a sticky "On this page" index and a contact card. They are built from existing content and theme tokens, and are left out below 1024 px.
+
+### Brand
+
+The logo is the artwork supplied for the site: a charcoal "S" mark with an orange cap and three grey bars, "SITE" in charcoal and "SURE" in orange, and "LABS" set wide between two rules. Only a 1536 × 1024 JPG was supplied (kept in `frontend/brand/logo-source.jpg`), so it was traced to vector and is drawn as inline SVG. That keeps it sharp at every size and lets the charcoal parts reverse to off-white on a dark page.
+
+| Where | What |
+| --- | --- |
+| Header and footer | `LogoLockup`: the mark with the wordmark beside it (`src/components/brand/Logo.tsx`) |
+| End of the home page | `LogoStacked`: the artwork as supplied. `BrandClosing` builds it piece by piece as you scroll: the grey bars rise like floors, the dark S drives in, the orange slab caps it, then the wordmark and its rules arrive |
+| Browser tab, home screen | `public/favicon.svg` (the mark on a tile: a charcoal tile on a light tab strip, a paper tile on a dark one), `favicon-32.png`, `apple-touch-icon.png` |
+| Link previews | `public/og-image.png` (1200 × 630) |
+| Standalone files | `public/brand/logo.svg` (for light backgrounds), `logo-reversed.svg` (for dark backgrounds), `logo-mark.svg` (the mark alone) |
+
+The shapes live in `src/components/brand/logo-data.ts`. Their colours come from `--logo-ink`, `--logo-orange` and `--logo-gray`, so the logo follows the theme like everything else. To check the trace, the SVG was rendered in Chromium and compared with the JPG pixel by pixel: the mean difference is 6.4 out of 255 and 0.6% of pixels differ, all on anti-aliased edges. A trace is still an approximation: if the designer has the original vector file (SVG, AI or PDF), put it in `public/brand/` and replace `logo-data.ts`.
+
+**Palette.** The logo's three colours drive the whole site, softened rather than saturated: graphite and warm off-white are the two page colours and the logo orange is the single accent. Contrast is measured against the page colour.
+
+| Role | Dark | Light |
+| --- | --- | --- |
+| Page | `#141619` graphite | `#f7f4ef` warm paper |
+| Raised surface | `#22252a` | `#ffffff` |
+| Text | `#f4f1ec` (16.1:1) | `#22252a` (14.0:1) |
+| Secondary text | `#adb1b7` (8.4:1) | `#565b62` (6.2:1) |
+| Brand orange: buttons, dotted type, glows | `#f06623` | `#f06623` |
+| Orange as small text, icons and lines | `#f47a3c` (6.6:1) | `#b8400b` (5.1:1) |
+| Orange as large display type | `#f06623` (5.7:1) | `#d65a1c` (3.6:1) |
+| The logo's grey, for secondary marks | `#8f969e` | `#6d737a` |
+
+Orange fills carry charcoal text (4.85:1), never white. The products take a calm family of warm accents around the logo orange: Anviksha `#f06623`, SiteVision amber `#e8a14a`, Digi Reco terracotta `#d9744f`, Parichay sand `#cfae72`, Progress Tracker stone `#9aa6a0`.
+
+### Light and dark themes
+
+A toggle in the header (also in the mobile menu) switches the whole site between dark and light. A first-time visitor sees dark, the brand look; the choice is remembered (`localStorage` key `ssl-theme`) and followed by other open tabs.
+
+| Piece | How it works |
+| --- | --- |
+| Active theme | `data-theme="light"` on `<html>` (absent or `dark` means dark). `src/lib/theme.ts` is the only code that changes it, and `useTheme()` reads it. |
+| No flash on load | A one-line inline script in `index.html` applies the saved theme before first paint and sets the browser UI colour (`theme-color`). Under the production Content-Security-Policy its SHA-256 is allow-listed in `nginx.conf`; `scripts/postbuild.mjs` fails the build if the script and the hash drift apart. After editing the script, run `npm run build` and paste the hash it prints into both policy lines. |
+| Colour | Every colour is a CSS custom property declared in two blocks in `src/styles/global.css` ("Colour palettes": dark and light, same names in the same order). Components use `var(--color-fg)`, `var(--color-bg-2)`, `var(--color-accent)` and so on, so they follow the theme with no per-theme code. Do not hard-code a hex, `white` or `black` in a component: add a token to both blocks instead. |
+| Contrast bands | `.theme-invert` renders a section in the opposite palette (a light band in dark mode, a dark band in light mode): "Start here", the problem/solution and principles bands, the services process. `.theme-dark` and `.theme-light` force one palette; `.theme-root` returns to the page's palette inside a band (the "Start here" panels). |
+| Product accents | A product's accent colour goes through `accentVars()` (`src/lib/accent.ts`), the `.accent-scope` class and `var(--accent-ink)`: full strength on dark, mixed toward ink on light, so small labels stay readable in both. |
+| Images | Screenshots are never altered. The faded bottom edge that hides the recordings' burned-in subtitles dissolves into whatever the screenshot sits on: a slightly raised graphite matte in dark mode (`--color-shot`), the paper itself in light mode (`--color-shot: transparent`), so light and dark screens both end softly. Glows, shadows and hairline rings come from per-theme tokens. |
+| WebGL globe | Reads the theme from `useTheme()`. Dark: light adds up (additive blending), warm off-white land dots with an orange network. Light: charcoal land dots and the same orange network composite normally, and nodes get a dark core (`globe` in `src/design/tokens.ts`). Colours update in place; nothing is rebuilt. |
+| Switching | Where the browser supports the View Transitions API, the new theme is revealed as a circle growing from the toggle. Elsewhere the colours cross-fade. With `prefers-reduced-motion` it is instant. |
+
+To follow the visitor's OS setting on first visit instead of defaulting to dark, change `DEFAULT_THEME` and the inline script as described in `src/lib/theme.ts`.
+
+### Mobile
+
+Checked at 320, 360, 390 and 430 px, on tablets (768 and 820 px) and in landscape (844 × 390), in both themes. What a phone gets that a desktop does not:
+
+| Area | On a phone |
+| --- | --- |
+| Rhythm | Section padding is 64 px instead of 88 px (`--section-y`; desktop spacing is unchanged). The brand closing's scroll track is 2.1 screens instead of 2.8. The home page is **9.0 screens** (was 10.0), the Anviksha page **8.4** (was 12.4), Products **7.0** (was 7.6). |
+| First screen | Buttons are full width, the product strip is a 2 x 2 grid (one row from 1024 px), the headline sets on exactly three lines from 320 px up, and the lead paragraph is there from the first paint: it is the largest thing painted (the LCP), so it is not faded in. |
+| Image stacks | Product cards, workflow steps and application screens are swipe rows (`SwipeList`: native scroll-snap, position dots, keyboard-focusable) instead of long stacks. From 768 px up the same markup is the grid it always was. |
+| Touch | Every button and link is at least 44 px tall where the primary pointer is coarse (`@media (pointer: coarse)`); mouse layouts are untouched. Hover effects only run where hover exists (`@media (hover: hover)`), so nothing is left "stuck" after a tap. No grey tap flash. |
+| Forms | The enquiry form comes before the "what happens next" notes. The three enquiry types are full-width 48 px options, fields are 16 px (iOS does not zoom) and ask for the right keyboard (email, capitals, Next key), and the submit button is full width. |
+| Menu | The drawer scrolls on short screens, sizes its links to the screen height and drops the product chips under 700 px tall, so "Request a Demo" and the theme toggle are always reachable (checked at 320 × 568 and in landscape). |
+| Images | Every still has 960 and 1280 px copies (`scripts/encode-media.sh`, `src/lib/images.ts`) and each image says how wide it is drawn (`sizes`), so a phone downloads a third to a half of the bytes (the Anviksha page: 315 kB of stills down to 90 to 110 kB). Heavily cropped images keep the full file. |
+| Fonts | Inter and Space Grotesk have metric-matched fallbacks (`Inter Fallback`, `Space Grotesk Fallback` in `global.css`, measured against the real fonts), so the web font swap moves nothing: layout shift 0. |
+| Effects | The 3D globe starts later on a phone and not at all on slow connections or data saver. The "Start here" light show is static on phones. The header's glass uses less blur on touch screens, with the `-webkit-` property for iOS before 18. |
+| Dialogs | The details sheet's actions take two rows (a fifth of the screen at most). The video fits a landscape phone with its close button and caption on screen. |
+| Safe areas | Page gutters respect the notch in landscape; the footer and menu clear the home indicator. |
 
 ### Animation and interaction
 
@@ -117,23 +204,27 @@ Tokens live in one place: `src/styles/global.css` (`@theme` and `:root`), mirror
 | Letter-by-letter masked headline (screen-reader-safe) | Hero | Motion (`TextReveal`) |
 | Word-masked headings, differing section reveals (fade-up, clip-up, clip-right, scale, slide) | All pages | Motion (`Reveal`, `TextReveal`) |
 | Rotating dotted globe with network arcs, light trails, orbit rings, pointer parallax | Hero | React Three Fiber + custom shaders; lazy-loaded; SVG fallback |
-| Halftone / dotted display type (real text, dot fill via `background-clip`) | Positioning, About, 404 | CSS |
-| Scroll-lit statement | Home positioning | Motion `useScroll` |
-| Interactive product showcase with active state, clip transitions and depth parallax | Home | Motion |
+| Halftone / dotted display type (real text, dot radius driven by scroll, light sweep, hover sweep) | About, 404 | CSS + Motion `useScroll` |
+| **Scroll-driven product stage:** name, copy and screen change as you scroll; layers wipe in, front screen gets depth | Home ecosystem | GSAP ScrollTrigger (lazy-loaded) + Motion |
+| Reading-guide list: active row draws its line and icon, cursor spotlight | Home why | Motion `useInView` + CSS |
+| Aurora panels, rotating conic border, cursor spotlight, clip reveals from opposite sides | Home start here | CSS + Motion |
+| Project details sheet: scale-in, staggered content, clip-wipe between workflow screens | Home ecosystem | CSS + Motion |
 | Image clip reveals with settle-zoom | Product pages | Motion (`ImageReveal`) |
 | Magnetic buttons (desktop, fine pointer only) | CTAs | Motion springs (`Magnetic`) |
-| **Signature scroll story 1:** "From photograph to report" wipes between real Anviksha screens | Home | GSAP ScrollTrigger (lazy-loaded) |
-| **Signature scroll story 2 / brand transformation:** a luminous point swells into the core, draws the ring and sight-lines, then the wordmark wipes in and the closing line + CTA arrive | Home end | GSAP ScrollTrigger (lazy-loaded) |
+| **Theme switch:** the new theme is revealed as a circle growing from the toggle; the sun and moon swap places | Header toggle | View Transitions API (cross-fade fallback) + CSS |
+| **Brand transformation:** the logo assembles as you scroll: the three grey bars rise, the dark S drives in around them, the orange slab caps it, the wordmark and its rules arrive, then the closing line and CTA | Home end | GSAP ScrollTrigger (lazy-loaded) |
 
-Neither scroll sequence pins or hijacks scrolling (CSS `position: sticky` + scrub). Both collapse to a static layout under `prefers-reduced-motion`, and the workflow story becomes a stacked list below 1024 px.
+The two scroll-driven sequences (product stage, brand closing) use CSS `position: sticky` plus a scrub: no pinning, no scroll hijacking. Under `prefers-reduced-motion` they become static (a product grid, and the finished closing), and below 1024 px the product stage becomes a swipeable carousel.
 
 **Ownership rule:** simple interface motion lives in Motion presets (`src/lib/motion.ts`); long scroll timelines live in GSAP; 3D lives in Three.js.
 
 ### Graceful degradation
 
 - Hero paints an SVG globe immediately; the WebGL scene mounts only after `load`, on devices with WebGL, enough CPU/memory, no `saveData`, and no reduced-motion preference. It pauses off-screen, lowers pixel ratio under load (`PerformanceMonitor`), disposes geometry on unmount, and falls back to the SVG on context loss or errors.
-- Mobile: fewer particles (2,600 vs 6,200), lower DPR, no pointer effects, no annotations.
-- Demo videos are never fetched until the visitor presses play; teaser loops and posters load only near the viewport.
+- Mobile: fewer particles (2,600 vs 6,200), lower DPR, no pointer effects, no annotations, and the scene starts 2.8 s after load instead of 0.5 s. On connections reporting 2G/3G (or data saver) it is skipped and the static globe stays.
+- Demo videos are fetched only when the visitor presses Demo. Screenshots are lazy-loaded WebP.
+- The demo recordings have subtitles burned into the bottom edge; screenshots fade that edge (`.fade-caption`) so the subtitles don't compete with the layout.
+- If GSAP fails to load, the product section falls back to the static card layout instead of an empty scroll track.
 
 ---
 
@@ -185,7 +276,7 @@ docker compose up -d --build
 # site on http://localhost:8080 (WEB_PORT). Put TLS in front: Caddy, Cloudflare, or your load balancer.
 ```
 
-The `web` container serves the prerendered site with gzip, immutable caching for hashed assets, a strict Content-Security-Policy, byte-range video, a real `404` status for unknown URLs, and proxies `/api/` to the `api` container with per-IP request limiting. nginx overwrites `X-Forwarded-For`, so clients cannot spoof their address.
+The `web` container serves the prerendered site with gzip, immutable caching for hashed assets, a strict Content-Security-Policy, byte-range video, a real `404` status for unknown URLs, and proxies `/api/` to the `api` container with per-IP request limiting. nginx overwrites `X-Forwarded-For`, so clients cannot spoof their address. The policy allow-lists exactly one inline script, by SHA-256: the theme bootstrap in `index.html` (see [Light and dark themes](#light-and-dark-themes)).
 
 Reading enquiries: set `ADMIN_TOKEN`, then `curl -H "Authorization: Bearer $ADMIN_TOKEN" https://sitesurelabs.com/api/admin/enquiries`. Or query the `enquiries` table directly.
 
@@ -200,36 +291,51 @@ Build with `VITE_API_URL=https://api.example.com npm run build` and upload `fron
 3. Set `IP_HASH_SALT`, a strong database password and SMTP or webhook credentials.
 4. Submit the contact form once in production and confirm the notification arrives.
 5. Submit `https://sitesurelabs.com/sitemap.xml` to Google Search Console.
-6. Host `public/media/*.mp4` (about 36 MB) on a CDN if traffic grows. They are referenced by path in `src/data/products.ts`.
+6. Host `public/media/*.mp4` (about 47 MB) on a CDN if traffic grows. They are referenced by path in `src/data/products.ts`.
 
 ---
 
 ## Verification
 
-Run on the final code:
+Run on the final code with scripted browser checks (Playwright, axe-core, Lighthouse). The scripts are not part of the repo.
 
 | Check | Result |
 | --- | --- |
 | `tsc -b` | 0 errors |
 | `eslint .` | 0 problems |
-| `pytest` (backend) | 15 passed |
-| `vite build` | succeeds; 15 route pages, 10 sitemap URLs, `404.html` |
-| axe-core (WCAG 2 A/AA + best practice), 14 routes × desktop and mobile | 0 violations |
-| Browser console on every route | no errors |
-| Contact form, end to end against the live API | validation, success, server rejection and network failure each verified; row persisted |
-| Reduced motion | no `<canvas>`, static closing, all content visible |
-| Mobile drawer / keyboard | focus trap, Esc, focus restore, skip link, arrow-key tabs verified |
-| Horizontal overflow | none at 390, 820, 1440 px |
-| Docker stack (nginx → API → PostgreSQL), tested as deployed | every route 200 with its own `<title>`; unknown URL → real 404; strict CSP with no violations; hero WebGL renders under the CSP; form → PostgreSQL → admin endpoint; duplicate resubmission is idempotent; video `Range` → 206 |
+| `pytest` (backend) | 22 passed |
+| `vite build` | succeeds; 12 route pages, 11 sitemap URLs, `404.html` |
+| axe-core (WCAG 2 A/AA + best practice) | 0 violations **in both the dark and the light theme** (52 audits each): the homepage in every motion state (stage at four scroll positions, each section, closing, footer, details sheet, phone menu) on desktop and phone, the contact form with its validation errors showing, and all 13 routes at both sizes |
+| Browser console | no errors or warnings |
+| Theme behaviour checks (27) | first visit is dark and nothing is stored; the toggle switches, saves the choice, updates the browser UI colour and keeps the choice after reload; with the app JavaScript blocked the saved theme is already applied (no flash); Enter and Space work and focus is visible; a second tab follows; with storage blocked the page still loads dark and switches for the visit; on a phone the header toggle is at least 44 px and the menu has its own; no horizontal overflow or header collision at 320 and 360 px; the cross-fade path works without the View Transitions API |
+| Content-Security-Policy | the production bundle under the real nginx policy: the inline theme script runs when its hash is in the policy and is blocked when it is not, and the build fails if the two ever differ |
+| Existing behaviour suite (36) | passes unchanged in both themes, on the dev server and the nginx container |
+| Mobile behaviour checks (43), in both themes | no horizontal overflow and no console errors on every page at 320 × 568, 360 × 740, 390 × 844, 430 × 932, 768 × 1024 and 844 × 390; every button and link at least 44 px tall on touch (13 pages, 390 and 320 px wide); a tap leaves nothing in its hover state; the lead paragraph is visible from the first paint on a phone and still animates in on desktop; a 2x phone gets the 960 px image and a 3x phone the 1280 px one; the menu's CTA and theme toggle are reachable at 320 × 568 and in landscape; product pages use swipe rows on a phone and grids on a tablet; the contact form comes first on a phone and beside the notes on desktop; keyboards and 16 px fields; page and closing-track lengths; the hero headline on exactly three lines from 320 to 430 px; the details sheet's footer fits two rows; the video, its close button and caption fit a landscape phone |
+| Behaviour checks (36), on the dev server, the production bundle and the nginx container | name changes as you scroll and is reversible; rail buttons by keyboard and mouse; Details opens the sheet, focus moves in and is trapped, the page behind is locked, Esc closes, focus returns; the sheet's stepper by arrow keys; demo plays inside the sheet and Esc closes only the video; planned product shows "In development" instead of Details; capability and "Start here" links; phone carousel and sheet; reduced motion |
+| Horizontal overflow | none at 320, 360, 390, 430, 768, 820, 1440 px or in landscape (844 × 390), on every page |
+| Docker stack (nginx → API → PostgreSQL), tested as deployed | every route 200 with its own `<title>`; unknown URL → real 404; strict CSP with no violations; hero WebGL renders under the CSP; the behaviour suite passes against nginx; form → PostgreSQL; video `Range` → 206 |
 
-Lighthouse (production build served by the nginx container, gzip on):
+Lighthouse (production build, gzip on):
 
 | | Performance | Accessibility | Best practices | SEO |
 | --- | --- | --- | --- | --- |
-| Desktop | 99 | 100 | 100 | 100 |
-| Mobile (simulated slow 4G, 4× CPU) | 77 | 100 | 100 | 100 |
+| Home, desktop, dark | 99 | 100 | 100 | 100 |
+| Home, desktop, light | 99 | 100 | 100 | 100 |
+| Home, mobile, dark (simulated slow 4G, 4× CPU) | 88 to 91 | 100 | 100 | 100 |
+| Home, mobile, light | 89 to 93 | 100 | 100 | 100 |
+| Home, mobile, with the 3D scene running (software WebGL in the test browser) | 82 to 86 | 100 | 100 | 100 |
 
-Mobile performance is limited by client-side rendering: nothing paints until about 150 kB of gzipped JavaScript has executed on a throttled CPU, and the headline then animates in (LCP ≈ 4.7 s in the simulation, FCP 2.8 s, TBT 150 ms, CLS 0.002). The three.js chunk (≈ 245 kB gzip) is lazy and loads only after the page has loaded. If mobile LCP needs to improve further, the next step is server-side or static rendering of the hero (for example Next.js) with a CSS-driven headline entrance.
+On a phone the page is client-rendered, so nothing paints until about 155 kB of gzipped JavaScript has run on a throttled CPU (FCP about 2.7 s in the simulation). The lead paragraph is the largest thing painted, so it is shown from the first paint instead of fading in: LCP is 2.6 to 3.3 s (it was 4.7 s). The web-font swap moves nothing (layout shift 0, it was 0.002). The 3D scene starts 2.8 s after load, so total blocking time is 40 to 50 ms (it was about 165 ms); with the scene running in the test browser (software WebGL, much slower than a real GPU) it is 200 to 290 ms. If LCP needs to improve further, the next step is static prerendering of the hero (for example Next.js).
+
+Homepage size, measured the same way before and after this change (same machine, same method):
+
+| Homepage | Before | After |
+| --- | --- | --- |
+| Height, desktop (1440 × 900) | 21.75 screens | **10.51 screens** |
+| Height, mobile (390 × 844) | 22.27 screens | **7.30 screens** |
+| Words (real text nodes, excluding decorative duplicates) | 1,145 | **371** desktop / **332** mobile |
+
+The brand closing is now the largest single block (3.2 screens on desktop). Trimming its scroll distance (`h-[210vh] md:h-[320vh]` in `BrandClosing.tsx`; it was 280vh on phones) is the easiest way to shorten the page further.
 
 ---
 
@@ -237,7 +343,11 @@ Mobile performance is limited by client-side rendering: nothing paints until abo
 
 - **Vite SPA, not Next.js.** A marketing site with a single contact form doesn't need a Node server. To avoid the usual SPA SEO weakness, `scripts/postbuild.mjs` emits per-route HTML with correct metadata, a sitemap and a real 404. Trade-off: the visible content still renders client-side, so first paint waits for JS.
 - **Real screenshots only.** Product imagery is frames extracted from the supplied demo recordings (`scripts/encode-media.sh` rebuilds them). No fictional UI is presented as a product screen. The one illustration (Progress Tracker) is a labelled concept panel.
-- **Placeholders are explicit.** Progress Tracker (`verified: false`) is `noindex` with "to be confirmed" copy. Insights entries are labelled templates and `noindex`. The testimonial component renders nothing until `src/data/testimonials.ts` contains approved quotes.
+- **Dark by default, light on request.** The brand look is dark, so that is what a first-time visitor sees; the toggle remembers the choice. Light is a full second palette, not an inversion filter, and the contrast bands flip against whichever theme is active. Product screenshots are shown as they are in both themes.
+- **Orange is the accent, not the background.** The palette comes from the logo (charcoal, orange, grey) and is kept calm: graphite or warm paper behind everything, orange only on fills (buttons, dotted type, glows, the globe's network) and in a few text roles. Small orange text uses `--color-accent` (lighter on graphite, burnt orange on paper) so it passes WCAG AA; large display words use `--color-accent-display`; buttons keep the pure logo orange with charcoal text. Never put the raw logo orange on paper as small text (2.9:1).
+- **Touch behaviour keys off the input device, not the screen width.** Finger-sized targets use `(pointer: coarse)` and hover effects use `(hover: hover)`, so a narrow desktop window keeps its mouse layout and a large tablet gets finger-sized controls.
+- **Responsive images by file name.** `name.webp` (1920 px) sits beside `name-1280.webp` and `name-960.webp`; `stillSet()` builds the `srcset` and each place that shows a still states its `sizes`. Heavily cropped images (the tall Products feature) keep the full file on purpose: a cover crop scales them by height, not width, so the browser's width-based choice would be too small.
+- **Placeholders are explicit.** Progress Tracker (`verified: false`) is `noindex` with "to be confirmed" copy. The testimonial component renders nothing until `src/data/testimonials.ts` contains approved quotes.
 - **Business email enforced** on the form (client and server). Set `REQUIRE_BUSINESS_EMAIL=false` if that costs leads.
 - **In-process rate limiter** is per worker (the Docker image runs one). The nginx config adds a per-IP limit in front for multi-instance setups.
 - **`THREE.Clock` deprecation warning** appears in the dev console. It originates inside `@react-three/fiber` 9.x with three 0.186 and is harmless; it goes away when R3F updates.
@@ -247,12 +357,13 @@ Mobile performance is limited by client-side rendering: nothing paints until abo
 ## Open items needing real assets, credentials or confirmation
 
 **Assets**
-- [ ] **Official logo.** A typographic wordmark and aperture mark are temporary. Replace `LogoMark` / `Wordmark` in `src/components/brand/Logo.tsx` (also used by the closing animation), `public/favicon.svg` and `public/og-image.png`.
-- [ ] **Founder photo and bio** (About page). No photo was found in the supplied folder (`d:\Siva.S\Desktop\v` held only the three videos).
+- [ ] **Original logo vector.** The logo in use is a trace of the supplied 1536 × 1024 JPG (see Brand above). If the designer has the original SVG, AI or PDF, swap it into `public/brand/` and `src/components/brand/logo-data.ts`; the favicon, touch icon and `og-image.png` were drawn from the same shapes and would be redone from it.
+- [ ] **Founder photo and bio** (About page). No photo was found in the supplied folder (`d:\Siva.S\Desktop\v` held only the product videos).
 - [ ] **Progress Tracker**: scope, capabilities, screenshots. All of its copy is placeholder.
 
 **Permissions**
 - [ ] **Customer branding in the demos.** The recordings and extracted stills show "My Home Group / My Home Constructions" branding and project names. Confirm permission to publish them, or re-record with neutral demo data. The figures shown are demo data and are labelled as such on the site.
+- [ ] **Parichay recording.** It shows worker names and photos (illustrated avatars), Aadhaar-style numbers, contractor and site names and pass counts (434 in total), under the "My Home Group" brand. The site avoids the records table, but the pass preview and dashboard stills show some of it. Confirm it is demo data, or that it may be published; otherwise re-record with neutral data. The Parichay page makes no claim about the data being real or demo.
 
 **Business facts to confirm** (search the code for `CONFIRM`)
 - [ ] Contact mailbox (`hello@sitesurelabs.com` is a placeholder) and any postal address / phone.
