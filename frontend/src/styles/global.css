@@ -72,6 +72,8 @@
 
 /* Very small phones (320 px class): the hero headline drops a step so "engineered for" stays on one line. */
 @media (max-width: 340px) { :root { --fs-display: 2.4rem; } }
+/* From lg the header is taller, so the stacked logo (mark above the wordmark) is shown at a size where its lettering reads. */
+@media (min-width: 1024px) { :root { --header-h: 88px; } }
 
 /* ==========================================================================
    Colour palettes
@@ -302,10 +304,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
     --content: calc(min(100%, var(--container-max) + var(--gutter) * 2) - var(--gutter) * 2);
     --col7: calc((var(--content) - 11 * var(--grid-gap)) * 7 / 12 + 6 * var(--grid-gap));   /* the copy column, 7 of 12 */
     --copy: calc(max(var(--fs-display) * 6.56, min(var(--fs-lead) * 29.2, var(--col7))) + 28px);
-    --gw: clamp(440px, min(calc((100% - var(--edge) * 2 - var(--copy)) / 0.756), calc((100% - 8px - var(--edge) - var(--copy)) / 0.878), calc((max(100svh, 780px) - 286px) / 0.77)), 920px);
+    --gw: clamp(440px, min(calc((100% - var(--edge) * 2 - var(--copy)) / 0.756), calc((100% - 8px - var(--edge) - var(--copy)) / 0.878), calc((max(100svh, 796px) - var(--header-h) - 214px) / 0.77)), 920px);
     width: var(--gw);
     right: max(8px, calc(var(--edge) - var(--gw) * 0.122));
-    top: calc(50% - 51px);   /* the middle of the space between the header and the product strip */
+    top: calc(50% + (var(--header-h) - 174px) / 2);   /* the middle of the space between the header and the product strip */
   }
 }
 
@@ -492,6 +494,35 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .ping-ring { animation: ping-ring 4.8s var(--ease-out) infinite; animation-delay: var(--d, 0s); }
   .visual-float { animation: visual-float 9s ease-in-out infinite; animation-delay: var(--d, 0s); }
 }
+
+/* ==========================================================================
+   Robotics stage (home): a dark "field monitor" that looks the same in both themes
+   ========================================================================== */
+
+/* warm light behind the robot: above the copy on phones, to the right of it from lg */
+.stage-glow { background: radial-gradient(75% 42% at 50% 30%, rgb(240 102 35 / 0.16), transparent 70%), radial-gradient(90% 45% at 50% 108%, rgb(143 150 158 / 0.12), transparent 70%); }
+@media (min-width: 1024px) {
+  .stage-glow { background: radial-gradient(46% 60% at 71% 44%, rgb(240 102 35 / 0.15), transparent 70%), radial-gradient(70% 55% at 50% 112%, rgb(143 150 158 / 0.12), transparent 70%); }
+}
+.stage-lines { background-image: repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.028) 0 1px, transparent 1px 4px); }
+.stage-vignette { background: radial-gradient(125% 100% at 50% 45%, transparent 55%, rgb(0 0 0 / 0.5)); }
+/* darkens the floor behind the copy so the text stays easy to read: below the robot up to lg, bottom-left from lg */
+.stage-scrim { background: linear-gradient(to top, rgb(12 13 16 / 0.92), rgb(12 13 16 / 0.7) 34%, transparent 52%); }
+@media (min-width: 1024px) {
+  .stage-scrim { background: radial-gradient(62% 72% at 0% 100%, rgb(12 13 16 / 0.88), rgb(12 13 16 / 0.55) 50%, transparent 78%); }
+}
+/* a slow light running round the frame (uses @property --angle, declared after this layer) */
+.stage-ring::after {
+  content: ""; position: absolute; inset: 0; z-index: 5; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: conic-gradient(from var(--angle, 0deg), rgb(240 102 35 / 0.8), transparent 22%, transparent 50%, rgb(143 150 158 / 0.5) 72%, transparent 94%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .stage-ring::after { animation: spin-angle 14s linear infinite; }
+}
+/* the stage's pause button stops its CSS loops too, not only the 3D scene */
+[data-paused] *, [data-paused]::after { animation-play-state: paused !important; }
 
 /* Slow drifting light for the "Start here" panels. */
 @keyframes drift-a { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(10%, -8%, 0) scale(1.18); } }

@@ -114,7 +114,6 @@ export function Hero() {
               transition={{ duration: 0.9, ease: ease.out, delay: 0.7 }}
             >
               <Button to="/products" variant="primary" arrow magnetic className="w-full sm:w-auto">Explore Our Products</Button>
-              <Button to="/contact" variant="secondary" magnetic className="w-full sm:w-auto">Build With Us</Button>
             </motion.div>
           </div>
         </div>

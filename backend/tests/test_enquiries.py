@@ -1,7 +1,13 @@
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timedelta, timezone
+
 import pytest
 from fastapi.testclient import TestClient
+from pydantic import ValidationError
+from sqlalchemy import func, select, text
 
 from app.config import Settings
+from app.db import Enquiry, make_session_factory
 from app.main import create_app
 
 VALID = {
@@ -51,7 +57,7 @@ def test_valid_enquiry_is_stored_and_listed(client):
     assert "ip_hash" not in rows[0]
 
 
-@pytest.mark.parametrize("interest", ["anviksha", "sitevision", "digi-reco", "parichay", "progress-tracker", "custom-ai", "other"])
+@pytest.mark.parametrize("interest", ["anviksha", "sitevision", "digi-reco", "parichay", "progress-tracker", "robotic-dog", "custom-ai", "other"])
 def test_every_product_can_be_the_interest(client, interest):
     r = post(client, interest=interest, message=f"We would like to talk about {interest} for our sites.")
     assert r.status_code == 201
@@ -132,3 +138,67 @@ def test_cors_preflight(client):
     assert r.status_code == 200 and r.headers["access-control-allow-origin"] == "http://localhost:5173"
     bad = client.options("/api/enquiries", headers={"Origin": "http://evil.example", "Access-Control-Request-Method": "POST"})
     assert "access-control-allow-origin" not in bad.headers
+
+
+# ---------------------------------------------------------------- SQLite
+
+
+def test_timestamps_come_back_in_utc(client):
+    post(client)
+    created = client.get("/api/admin/enquiries", headers={"Authorization": "Bearer secret-token"}).json()[0]["created_at"]
+    assert datetime.fromisoformat(created).utcoffset() == timedelta(0)
+
+
+def test_duplicates_only_count_within_24_hours(client):
+    first = post(client).json()["id"]
+    with client.app.state.session_factory() as db:  # age the stored enquiry past the window
+        db.get(Enquiry, first).created_at = datetime.now(timezone.utc) - timedelta(hours=25)
+        db.commit()
+    assert post(client).json()["id"] != first
+
+
+def test_database_file_and_folder_are_created_in_wal_mode(tmp_path):
+    path = tmp_path / "new" / "folder" / "enquiries.db"
+    settings = Settings(app_env="test", database_url=f"sqlite:///{path}", _env_file=None)
+    with TestClient(create_app(settings)) as c:
+        assert c.get("/api/health").json()["database"] is True
+        with c.app.state.session_factory() as db:
+            assert db.execute(text("PRAGMA journal_mode")).scalar() == "wal"
+    assert path.is_file()
+
+
+def test_concurrent_writers_do_not_lock_each_other_out(tmp_path):
+    factory = make_session_factory(f"sqlite:///{tmp_path / 'busy.db'}")
+
+    def write(i: int) -> None:
+        with factory() as db:
+            db.add(Enquiry(id=f"SSL-{i:08X}", kind="demo", name="N", email="n@acme.example", company="Acme", interest="other", message="m", content_hash=str(i), ip_hash="h"))
+            db.commit()
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        list(pool.map(write, range(48)))
+    with factory() as db:
+        assert db.scalar(select(func.count()).select_from(Enquiry)) == 48
+
+
+def test_notification_outcome_is_saved_on_the_enquiry(tmp_path):
+    # httpx refuses an ftp:// webhook at once, so delivery fails; the background task records that on the stored row
+    settings = Settings(app_env="test", database_url=f"sqlite:///{tmp_path / 'n.db'}", webhook_url="ftp://127.0.0.1/hook", _env_file=None)
+    with TestClient(create_app(settings)) as c:
+        ref = post(c).json()["id"]
+        with c.app.state.session_factory() as db:
+            row = db.get(Enquiry, ref)
+            assert row is not None and row.notified is False and (row.notify_error or "").startswith("webhook:")
+
+
+def test_in_memory_database():
+    settings = Settings(app_env="test", database_url="sqlite://", admin_token="t", _env_file=None)
+    with TestClient(create_app(settings)) as c:
+        assert post(c).status_code == 201
+        assert len(c.get("/api/admin/enquiries", headers={"Authorization": "Bearer t"}).json()) == 1
+
+
+@pytest.mark.parametrize("url", ["postgresql+psycopg://user:pass@localhost:5432/sitesurelabs", "mysql://user:pass@localhost/sitesurelabs"])
+def test_only_sqlite_is_accepted(url):
+    with pytest.raises(ValidationError, match="SQLite"):
+        Settings(database_url=url, _env_file=None)

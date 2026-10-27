@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { LogoLockup } from '@/components/brand/Logo'
+import { LogoStacked } from '@/components/brand/Logo'
 import { legalNav, nav, site } from '@/data/site'
 import { products } from '@/data/products'
 import { services } from '@/data/services'
@@ -24,7 +24,7 @@ export function Footer() {
       <div className="container-x">
         <div className="grid-12 gap-y-10 lg:gap-y-14">
           <div className="col-span-12 lg:col-span-4">
-            <Link to="/" aria-label="SiteSureLabs home" className="tap inline-flex items-center"><LogoLockup className="h-11 w-auto" /></Link>
+            <Link to="/" aria-label="SiteSureLabs home" className="tap inline-flex items-center"><LogoStacked className="h-24 w-auto" /></Link>
             <p className="t-body mt-5 max-w-sm lg:mt-6">{site.description}</p>
             <a href={`mailto:${site.email}`} className="link-arrow mt-6 lg:mt-8">{site.email}</a>
           </div>

@@ -1,6 +1,7 @@
 from functools import lru_cache
 from typing import Literal
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -15,8 +16,8 @@ class Settings(BaseSettings):
     # Comma-separated list of allowed browser origins
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
-    # SQLite works out of the box for development. Use PostgreSQL in production, e.g.
-    # postgresql+psycopg://user:password@host:5432/sitesurelabs
+    # The SQLite database file, created on first start. A relative path is relative to the folder the API runs
+    # from; the Docker image keeps it in its /data volume (sqlite:////data/sitesurelabs.db).
     database_url: str = "sqlite:///./sitesurelabs.db"
 
     # Abuse protection
@@ -40,6 +41,13 @@ class Settings(BaseSettings):
 
     # Bearer token for GET /api/admin/enquiries. The endpoint is disabled when unset.
     admin_token: str | None = None
+
+    @field_validator("database_url")
+    @classmethod
+    def _sqlite_only(cls, v: str) -> str:
+        if not v.startswith(("sqlite:", "sqlite+")):
+            raise ValueError("DATABASE_URL must be a SQLite URL, e.g. sqlite:///./sitesurelabs.db")
+        return v
 
     @property
     def cors_origin_list(self) -> list[str]:

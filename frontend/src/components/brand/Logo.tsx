@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { LOGO_BOX, MARK_BOX, WORD_BOX, mark, word } from './logo-data'
+import { LOGO_BOX, MARK_BOX, mark, word } from './logo-data'
 
 /**
  * The SiteSureLabs logo, drawn as inline SVG from the supplied artwork (traced to paths in logo-data.ts).
@@ -7,9 +7,8 @@ import { LOGO_BOX, MARK_BOX, WORD_BOX, mark, word } from './logo-data'
  * parts turn off-white on a dark page, the orange and grey stay. Every piece carries a data-logo attribute so the
  * closing animation can move them one by one.
  *
- *   <Logo />         header link: the mark beside the wordmark
- *   <LogoLockup />   the same lockup without the link
- *   <LogoStacked />  the artwork as supplied: mark above the wordmark
+ *   <Logo />         header link: the artwork as supplied
+ *   <LogoStacked />  the artwork as supplied: mark above the wordmark, LABS between its two rules
  *   <LogoMark />     the S mark on its own
  */
 
@@ -61,29 +60,11 @@ export function LogoStacked({ className = '', title }: { className?: string; tit
   )
 }
 
-// Horizontal lockup: the mark, then the wordmark drawn 1.4x larger relative to it so the lettering stays legible at
-// header size, centred on the mark's height. Units are the artwork's own.
-const GAP = 120
-const WORD_SCALE = 1.4
-const LOCKUP_W = MARK_BOX.w + GAP + WORD_BOX.w * WORD_SCALE
-const LOCKUP_H = MARK_BOX.h
-const WORD_Y = (LOCKUP_H - WORD_BOX.h * WORD_SCALE) / 2
-
-/** Mark and wordmark side by side. Size it with a height class (about 36 to 48 px). */
-export function LogoLockup({ className = '' }: { className?: string }) {
-  return (
-    <svg viewBox={`0 0 ${LOCKUP_W.toFixed(1)} ${LOCKUP_H}`} className={className} aria-hidden="true" focusable="false">
-      <g transform={`translate(${-MARK_BOX.x} ${-MARK_BOX.y})`}><MarkShapes /></g>
-      <g transform={`translate(${MARK_BOX.w + GAP} ${WORD_Y.toFixed(1)}) scale(${WORD_SCALE}) translate(${-WORD_BOX.x} ${-WORD_BOX.y})`}><WordShapes /></g>
-    </svg>
-  )
-}
-
-/** Header logo: a link home. Slightly smaller on the narrowest phones so the header never crowds. */
+/** Header logo: a link home, showing the artwork exactly as supplied. */
 export function Logo({ className = '' }: { className?: string }) {
   return (
     <Link to="/" aria-label="SiteSureLabs home" className={`tap inline-flex items-center ${className}`}>
-      <LogoLockup className="h-[34px] w-auto sm:h-10" />
+      <LogoStacked className="h-[54px] w-auto lg:h-[70px]" />
     </Link>
   )
 }

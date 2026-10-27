@@ -3,5 +3,8 @@ __pycache__
 *.pyc
 .env
 *.db
+*.db-wal
+*.db-shm
+*.db-journal
 .pytest_cache
 tests

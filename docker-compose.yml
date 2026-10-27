@@ -1,33 +1,16 @@
-# Production-style stack: nginx (static site + /api proxy) -> FastAPI -> PostgreSQL.
+# Production-style stack: nginx (static site + /api proxy) -> FastAPI, which stores enquiries in SQLite.
 #   cp .env.example .env   # then fill in the values
 #   docker compose up -d --build
 # The site is served on http://localhost:${WEB_PORT:-8080}. Put TLS in front (Caddy, Cloudflare, a load balancer).
+# The database is /data/sitesurelabs.db in the api container, on the "data" volume. Back it up (see the README).
 
 services:
-  db:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: sitesurelabs
-      POSTGRES_USER: sitesure
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sitesure -d sitesurelabs"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-
   api:
     build: ./backend
     restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
     environment:
       APP_ENV: production
-      DATABASE_URL: postgresql+psycopg://sitesure:${POSTGRES_PASSWORD}@db:5432/sitesurelabs
+      DATABASE_URL: sqlite:////data/sitesurelabs.db
       CORS_ORIGINS: ${PUBLIC_ORIGIN:-http://localhost:8080}
       TRUST_PROXY_HEADERS: "true"          # nginx overwrites X-Forwarded-For with the real client address
       IP_HASH_SALT: ${IP_HASH_SALT:?set IP_HASH_SALT in .env}
@@ -40,6 +23,8 @@ services:
       SMTP_USERNAME: ${SMTP_USERNAME:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       WEBHOOK_URL: ${WEBHOOK_URL:-}
+    volumes:
+      - data:/data                          # keeps the enquiries when the container is rebuilt or replaced
 
   web:
     build:
@@ -53,4 +38,4 @@ services:
       - "${WEB_PORT:-8080}:80"
 
 volumes:
-  pgdata:
+  data:
