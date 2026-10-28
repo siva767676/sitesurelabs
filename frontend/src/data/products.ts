@@ -51,6 +51,7 @@ export interface Product {
   }
   faq: { q: string; a: string }[]
   seo: { title: string; description: string }
+  metrics?: { label: string; value: string }[]
 }
 
 const still = (n: string) => `/media/stills/${n}.webp`
@@ -122,6 +123,11 @@ export const products: Product[] = [
       title: 'Anviksha: AI Construction Quality Inspection',
       description: 'Anviksha by SiteSureLabs turns site photos into located, rated and explained defect observations, with AI image analysis and quality observation reports.',
     },
+    metrics: [
+      { label: 'Images processed', value: '10,000+' },
+      { label: 'Live users', value: '150+' },
+      { label: 'Steps, capture to report', value: '4' },
+    ],
   },
   {
     slug: 'sitevision',
@@ -187,6 +193,11 @@ export const products: Product[] = [
       title: 'SiteVision: 360° Construction Site Capture and AI Progress',
       description: 'SiteVision by SiteSureLabs captures construction sites in 360° against the floor plan, publishes walkable tours and tracks progress with AI and the Drishti assistant.',
     },
+    metrics: [
+      { label: 'Capture of every room', value: '360°' },
+      { label: 'Steps, capture to answer', value: '4' },
+      { label: 'Report formats: PDF, Excel', value: '2' },
+    ],
   },
   {
     slug: 'digi-reco',
@@ -252,6 +263,11 @@ export const products: Product[] = [
       title: 'Digi Reco: Steel Reconciliation for Construction',
       description: 'Digi Reco by SiteSureLabs turns monthly site workbooks into ledgers and a steel abstract by diameter, with cross-checks, exceptions and a portfolio wastage dashboard.',
     },
+    metrics: [
+      { label: 'Rows filed before you commit', value: '0' },
+      { label: 'Steps, workbook to portfolio', value: '4' },
+      { label: 'Extra views: GRN and scrap', value: '2' },
+    ],
   },
   {
     slug: 'parichay',
@@ -318,6 +334,11 @@ export const products: Product[] = [
       title: 'Parichay: Worker Registration and Entry Passes for Construction Sites',
       description: 'Parichay by SiteSureLabs registers workers at the site gate, flags duplicates across sites, prints entry passes in batches and gives administrators a dashboard of every site.',
     },
+    metrics: [
+      { label: 'Passes on one A4 sheet', value: '9' },
+      { label: 'Registration steps', value: '3' },
+      { label: 'Cards per worker', value: '1' },
+    ],
   },
   {
     slug: 'progress-tracker',

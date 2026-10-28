@@ -47,6 +47,21 @@ function Highlights({ product }: { product: Product }) {
   )
 }
 
+/** The product's figures (data/products.ts `metrics`): a compact row of large numbers with small labels. */
+function Metrics({ product }: { product: Product }) {
+  if (!product.metrics) return null
+  return (
+    <dl className="accent-scope grid max-w-[34rem] grid-cols-3 gap-x-4 sm:gap-x-6" style={accentVars(product.accent)} aria-label="In numbers">
+      {product.metrics.map((m) => (
+        <div key={m.label} className="border-t-2 border-[var(--c-fg)] pt-3">
+          <dd className="font-display text-[clamp(1.5rem,1.1rem+1.1vw,2.25rem)] font-medium leading-none tracking-[-0.03em]">{m.value}</dd>
+          <dt className="t-label mt-2 !text-[0.625rem] !leading-snug !tracking-[0.06em] text-[var(--accent-ink)]">{m.label}</dt>
+        </div>
+      ))}
+    </dl>
+  )
+}
+
 /** Labelled concept panel for the product that has no screens yet. Never a fake screenshot. */
 function Concept({ product }: { product: Product }) {
   return (
@@ -88,7 +103,8 @@ function Copy({ product: p, active, side, onOpen }: { product: Product; active: 
       <motion.p {...fade(2)} className="mt-5 font-display text-[clamp(1.25rem,1rem+1vw,1.75rem)] font-medium leading-[1.15] tracking-tight">{p.tagline}</motion.p>
       <motion.p {...fade(3)} className="t-body mt-3 !max-w-[40ch]">{p.blurb}</motion.p>
       <motion.div {...fade(4)} className="mt-6"><Highlights product={p} /></motion.div>
-      <motion.div {...fade(5)} className="mt-8"><DetailsButton product={p} onOpen={onOpen} /></motion.div>
+      {p.metrics && <motion.div {...fade(5)} className="mt-7"><Metrics product={p} /></motion.div>}
+      <motion.div {...fade(p.metrics ? 6 : 5)} className={p.metrics ? 'mt-7' : 'mt-8'}><DetailsButton product={p} onOpen={onOpen} /></motion.div>
     </div>
   )
 }
@@ -144,6 +160,7 @@ function Card({ product: p, onOpen }: { product: Product; onOpen: (p: Product) =
         <p className="mt-2 font-display text-[1.125rem] font-medium leading-snug tracking-tight">{p.tagline}</p>
         <p className="t-body mt-2 !text-[0.9375rem]">{p.blurb}</p>
         <div className="mt-4"><Highlights product={p} /></div>
+        {p.metrics && <div className="mt-5"><Metrics product={p} /></div>}
         <div className="mt-auto pt-6"><DetailsButton product={p} onOpen={onOpen} /></div>
       </div>
     </article>

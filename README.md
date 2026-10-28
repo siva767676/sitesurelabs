@@ -103,7 +103,7 @@ sitesurelabs/
 | `/products` | Product catalogue with a different composition per product (landscape, tall, full-width band) |
 | `/products/:slug` | Reusable product template, driven entirely by `src/data/products.ts` |
 | `/services` | Eight custom-engineering services, each with outcome, capabilities and a use-case CTA |
-| `/about` | Philosophy, principles, product-first, founder placeholder |
+| `/about` | Philosophy, principles, product-first, the founder (Amod Jupally, with photo) |
 | `/contact` | Functional enquiry form (demo / project / general), pre-filled from `?type=&product=&service=` |
 | `/privacy`, `/terms` | Drafts for legal review, with a sticky "On this page" index (it follows the section being read) and a contact card beside the text |
 | `*` | Custom 404 |
@@ -230,6 +230,7 @@ The two scroll-driven sequences (product stage, brand closing) use CSS `position
 - Demo videos are fetched only when the visitor presses Demo. Screenshots are lazy-loaded WebP.
 - The demo recordings have subtitles burned into the bottom edge; screenshots fade that edge (`.fade-caption`) so the subtitles don't compete with the layout.
 - If GSAP fails to load, the product section falls back to the static card layout instead of an empty scroll track.
+- After a rebuild or redeploy, a tab that was already open asks for the old build's script files when a lazy part loads (the 3D scenes, GSAP) and gets a 404. The page then reloads itself once to pick up the current build (`vite:preloadError` in `src/main.tsx`); if the file is really missing it does not loop, and the static versions are shown.
 
 ---
 
@@ -303,6 +304,14 @@ docker compose exec api rm /data/backup.db
 ```
 
 To restore, stop the stack, copy the backup into the volume as `sitesurelabs.db` (with no `-wal` or `-shm` file beside it), and start it again.
+
+**If the Docker site behaves differently from the dev servers** (3D scenes showing their still drawings, scroll animations static, script errors), check these first. They are environment problems, not code: the two builds are the same code and were measured to behave the same.
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| Some or all animations missing; `127.0.0.1:<port>` shows a different site | Another program listens on the same port. On Windows it can hold the IPv4 side while Docker holds IPv6, so the browser gets some files from that program (`404` for the site's scripts) | `netstat -ano \| findstr :8080` (or your `WEB_PORT`). Set `WEB_PORT` in `.env` to a free port, then `docker compose up -d` |
+| Turnstile errors, the contact form never submits, or the admin endpoint is on unexpectedly | A comment after an empty value in `.env` (`KEY=   # note`): Compose reads the comment as the value | Comments on their own lines, as in `.env.example`; then `docker compose up -d --build` (the site key is baked into the frontend build) |
+| Animations stop working in a tab that was open while the images were rebuilt | The tab asks for the previous build's script files, which are gone | Handled: the page reloads itself once to pick up the new build (`vite:preloadError` in `src/main.tsx`) |
 
 ### Option B: static host + separate API
 
@@ -384,7 +393,8 @@ Homepage size, measured the same way before and after this change (same machine,
 
 **Assets**
 - [ ] **Original logo vector.** The logo in use is a trace of the supplied 1536 × 1024 JPG (see Brand above). If the designer has the original SVG, AI or PDF, swap it into `public/brand/` and `src/components/brand/logo-data.ts`; the favicon, touch icon and `og-image.png` were drawn from the same shapes and would be redone from it.
-- [ ] **Founder photo and bio** (About page). No photo was found in the supplied folder (`d:\Siva.S\Desktop\v` held only the product videos).
+- [ ] **Founder photo quality** (About page). The photo and bio are in (`public/brand/founder.webp`, `src/pages/About.tsx`). The photo is a 408 × 419 circular crop of a social-media avatar, shown as a circle; replace it with an original, higher-resolution portrait when there is one.
+- [ ] **Product figures** (the row of three figures on the home product stage and cards, and on each product page; `metrics` in `src/data/products.ts`). Anviksha shows the two figures supplied by the owner (10,000+ images processed, 150+ live users): confirm they are current. SiteVision, Digi Reco and Parichay show only facts taken from what the product does (for example nine passes per A4 sheet); no usage figures were supplied for them. Send real ones (users, records, sites) and add them as `{ label, value }` lines.
 - [ ] **Progress Tracker**: scope, capabilities, screenshots. All of its copy is placeholder.
 - [ ] **Robotic inspection dog.** The home section shows a concept render made for the site (procedural shapes, labelled "Concept render"), not the real robot. Confirm the company is happy to announce it publicly, whether it has a name, and send real renders, photos or video when they exist (they would replace the scene in `src/components/home/RobotDog.tsx`). "Register interest" enquiries arrive with interest `robotic-dog`.
 

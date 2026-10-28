@@ -195,6 +195,22 @@ export default function ProductDetail() {
         </section>
       )}
 
+      {p.metrics && (
+        <section className="section !py-10 md:!py-16" aria-labelledby="met-t">
+          <div className="container-x">
+            <h2 id="met-t" className="sr-only">In numbers</h2>
+            <dl className="grid grid-cols-3 gap-x-4 gap-y-6 sm:gap-x-8 md:gap-x-12">
+              {p.metrics.map((m, i) => (
+                <Reveal key={m.label} delay={i * 0.06} className="border-t-2 border-[var(--c-fg)] pt-5">
+                  <dd className="t-display !text-[clamp(2rem,1.1rem+3.6vw,4.75rem)] leading-none">{m.value}</dd>
+                  <dt className="t-label accent-scope mt-3 !text-[0.6875rem] !leading-snug text-[var(--accent-ink)] sm:!text-xs" style={accentVars(p.accent)}>{m.label}</dt>
+                </Reveal>
+              ))}
+            </dl>
+          </div>
+        </section>
+      )}
+
       {/* FAQ */}
       <section className="section" aria-labelledby="faq-t">
         <div className="container-x">

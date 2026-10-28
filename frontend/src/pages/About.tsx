@@ -77,9 +77,18 @@ export default function About() {
           <div className="grid-12 items-center gap-y-12">
             <div className="col-span-12 lg:col-span-5">
               <h2 id="team-t" className="t-label mb-8">Founder</h2>
-              {/* CONFIRM: founder photo, name, title and bio. Replace this placeholder with the real portrait and copy. */}
-              <div className="flex aspect-[16/10] max-w-sm items-end rounded-[var(--radius-xl)] sm:aspect-[4/5] border border-dashed border-[var(--c-line-strong)] p-6">
-                <p className="t-caption">Founder portrait and biography to be added. No photo was found in the supplied assets.</p>
+              <div className="flex flex-col gap-6">
+                <div className="aspect-square w-full max-w-[17rem] overflow-hidden rounded-full border border-[var(--c-line-strong)] bg-[#202327]">
+                  <img src="/brand/founder.webp" alt="Amod Jupally, Founder and CEO of SiteSureLabs, speaking at a podium" width={408} height={419} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                </div>
+                <Reveal>
+                  <h3 className="t-h3 mb-2">Amod Jupally</h3>
+                  <p className="t-label text-[var(--color-accent)]">Founder & CEO, SiteSureLabs</p>
+                  <p className="t-body mt-4">Amod Jupally leads SiteSureLabs’ vision to transform the construction industry through artificial intelligence, computer vision, and autonomous inspection technologies.</p>
+                  <p className="t-body mt-4">As a member of the Promoter Group at My Home Constructions and Maha Cement, he brings a strategic perspective on the intersection of real estate, industrial innovation, and emerging technologies. At SiteSureLabs, he leads the development of AI-powered solutions designed to improve construction quality, automate defect detection, and enhance safety and operational efficiency.</p>
+                  <p className="t-body mt-4">His work focuses on applying advanced AI and autonomous drone systems to identify structural anomalies, facade cracks, and waterproofing failures, helping make construction inspections more intelligent, precise, and scalable.</p>
+                  <p className="t-caption mt-6 text-[var(--color-accent)]">Focus Areas: Artificial Intelligence · Construction Technology · Computer Vision · Autonomous Inspection · Innovation Strategy</p>
+                </Reveal>
               </div>
             </div>
             <div className="about-dots col-span-12 overflow-hidden lg:col-span-7" aria-hidden="true">
