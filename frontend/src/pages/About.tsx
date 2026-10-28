@@ -80,8 +80,8 @@ export default function About() {
               <p className="t-label mt-4 text-[var(--color-accent)]">Founder & CEO, SiteSureLabs</p>
             </div>
             <Reveal className="col-span-12 lg:col-span-7 lg:col-start-6 lg:pt-[3.75rem]">
-              <p className="t-lead !max-w-none !text-[var(--c-fg)]">Founded in 2025 by Amod Jupally, SiteSureLabs is driven by a vision to bridge the gap between artificial intelligence and real-world industry challenges.</p>
-              <p className="t-body mt-6 max-w-[62ch]">As a member of the Promoter Group at My Home Constructions and Maha Cement, he brings a strategic perspective on the intersection of business, industrial innovation, and emerging technologies. At SiteSureLabs, he leads the development of intelligent solutions designed to help businesses improve quality, enhance operational efficiency, and embrace technological advancement.</p>
+              <p className="t-lead !max-w-none !text-[var(--c-fg)]">Founded in 2025 by Amod Jupally, SiteSureLabs is driven by a vision to bridge the gap between artificial intelligence and real-world construction industry challenges.</p>
+              <p className="t-body mt-6 max-w-[62ch]">As a member of the Promoter Group at My Home Constructions and Maha Cement, he brings a strategic perspective on the intersection of business, construction industrial innovation, and emerging technologies. At SiteSureLabs, the vision is to develop intelligent solutions designed to help businesses improve quality, enhance operational efficiency, and embrace technological advancement.</p>
             </Reveal>
             <div className="col-span-12 border-t border-[var(--c-line)] pt-8">
               <h3 className="t-label mb-5">Focus Areas</h3>
