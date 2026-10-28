@@ -447,8 +447,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 
 /* "Practical AI." on the About page: sized to the column on desktop, to the screen width below. */
-.about-dots { font-size: clamp(2.75rem, 12.5vw, 6.5rem); }
-@media (min-width: 1024px) { .about-dots { font-size: clamp(3rem, 8vw, 8rem); } }
 
 /* Cursor spotlight: a soft light that follows the pointer (JS sets --mx / --my). */
 .spot { position: relative; --mx: 50%; --my: 50%; }

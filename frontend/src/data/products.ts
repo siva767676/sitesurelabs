@@ -194,9 +194,9 @@ export const products: Product[] = [
       description: 'SiteVision by SiteSureLabs captures construction sites in 360° against the floor plan, publishes walkable tours and tracks progress with AI and the Drishti assistant.',
     },
     metrics: [
-      { label: 'Capture of every room', value: '360°' },
-      { label: 'Steps, capture to answer', value: '4' },
-      { label: 'Report formats: PDF, Excel', value: '2' },
+      { label: 'Projects', value: '3' },
+      { label: 'Towers', value: '23' },
+      { label: 'Capture processes for AI progress', value: '1,238' },
     ],
   },
   {
@@ -264,9 +264,9 @@ export const products: Product[] = [
       description: 'Digi Reco by SiteSureLabs turns monthly site workbooks into ledgers and a steel abstract by diameter, with cross-checks, exceptions and a portfolio wastage dashboard.',
     },
     metrics: [
-      { label: 'Rows filed before you commit', value: '0' },
-      { label: 'Steps, workbook to portfolio', value: '4' },
-      { label: 'Extra views: GRN and scrap', value: '2' },
+      { label: 'Steel records processed', value: '80,800' },
+      { label: 'Steel wastage tracked', value: '2.5%' },
+      { label: 'Digital record traceability', value: '100%' },
     ],
   },
   {
@@ -335,9 +335,9 @@ export const products: Product[] = [
       description: 'Parichay by SiteSureLabs registers workers at the site gate, flags duplicates across sites, prints entry passes in batches and gives administrators a dashboard of every site.',
     },
     metrics: [
-      { label: 'Passes on one A4 sheet', value: '9' },
-      { label: 'Registration steps', value: '3' },
-      { label: 'Cards per worker', value: '1' },
+      { label: 'Sites', value: '10' },
+      { label: 'Cards generated', value: '23,538' },
+      { label: 'Card for each worker', value: '1' },
     ],
   },
   {

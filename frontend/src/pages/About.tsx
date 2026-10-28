@@ -1,7 +1,6 @@
 import { Seo } from '@/components/ui/Seo'
 import { PageHero } from '@/components/ui/PageHero'
 import { Reveal } from '@/components/ui/Reveal'
-import { DottedText } from '@/components/ui/DottedText'
 import { CtaBand } from '@/components/ui/CtaBand'
 import { AboutVisual } from '@/components/ui/PageVisuals'
 import { principles } from '@/data/site'
@@ -74,25 +73,23 @@ export default function About() {
 
       <section className="section section--raised" aria-labelledby="team-t">
         <div className="container-x">
-          <div className="grid-12 items-center gap-y-12">
-            <div className="col-span-12 lg:col-span-5">
+          <div className="grid-12 gap-y-10">
+            <div className="col-span-12 lg:col-span-4">
               <h2 id="team-t" className="t-label mb-8">Founder</h2>
-              <div className="flex flex-col gap-6">
-                <div className="aspect-square w-full max-w-[17rem] overflow-hidden rounded-full border border-[var(--c-line-strong)] bg-[#202327]">
-                  <img src="/brand/founder.webp" alt="Amod Jupally, Founder and CEO of SiteSureLabs, speaking at a podium" width={408} height={419} loading="lazy" decoding="async" className="h-full w-full object-cover" />
-                </div>
-                <Reveal>
-                  <h3 className="t-h3 mb-2">Amod Jupally</h3>
-                  <p className="t-label text-[var(--color-accent)]">Founder & CEO, SiteSureLabs</p>
-                  <p className="t-body mt-4">Amod Jupally leads SiteSureLabs’ vision to transform the construction industry through artificial intelligence, computer vision, and autonomous inspection technologies.</p>
-                  <p className="t-body mt-4">As a member of the Promoter Group at My Home Constructions and Maha Cement, he brings a strategic perspective on the intersection of real estate, industrial innovation, and emerging technologies. At SiteSureLabs, he leads the development of AI-powered solutions designed to improve construction quality, automate defect detection, and enhance safety and operational efficiency.</p>
-                  <p className="t-body mt-4">His work focuses on applying advanced AI and autonomous drone systems to identify structural anomalies, facade cracks, and waterproofing failures, helping make construction inspections more intelligent, precise, and scalable.</p>
-                  <p className="t-caption mt-6 text-[var(--color-accent)]">Focus Areas: Artificial Intelligence · Construction Technology · Computer Vision · Autonomous Inspection · Innovation Strategy</p>
-                </Reveal>
-              </div>
+              <h3 className="t-h2">Amod Jupally</h3>
+              <p className="t-label mt-4 text-[var(--color-accent)]">Founder & CEO, SiteSureLabs</p>
             </div>
-            <div className="about-dots col-span-12 overflow-hidden lg:col-span-7" aria-hidden="true">
-              <DottedText size="1em">Practical<br />AI.</DottedText>
+            <Reveal className="col-span-12 lg:col-span-7 lg:col-start-6 lg:pt-[3.75rem]">
+              <p className="t-lead !max-w-none !text-[var(--c-fg)]">Founded in 2025 by Amod Jupally, SiteSureLabs is driven by a vision to bridge the gap between artificial intelligence and real-world industry challenges.</p>
+              <p className="t-body mt-6 max-w-[62ch]">As a member of the Promoter Group at My Home Constructions and Maha Cement, he brings a strategic perspective on the intersection of business, industrial innovation, and emerging technologies. At SiteSureLabs, he leads the development of intelligent solutions designed to help businesses improve quality, enhance operational efficiency, and embrace technological advancement.</p>
+            </Reveal>
+            <div className="col-span-12 border-t border-[var(--c-line)] pt-8">
+              <h3 className="t-label mb-5">Focus Areas</h3>
+              <ul className="flex flex-wrap gap-2.5">
+                {['Artificial Intelligence', 'Robotics', 'Emerging Technologies', 'Digital Transformation', 'Intelligent Automation', 'Innovation Strategy'].map((k) => (
+                  <li key={k} className="chip normal-case tracking-normal">{k}</li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>

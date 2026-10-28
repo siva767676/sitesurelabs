@@ -103,7 +103,7 @@ sitesurelabs/
 | `/products` | Product catalogue with a different composition per product (landscape, tall, full-width band) |
 | `/products/:slug` | Reusable product template, driven entirely by `src/data/products.ts` |
 | `/services` | Eight custom-engineering services, each with outcome, capabilities and a use-case CTA |
-| `/about` | Philosophy, principles, product-first, the founder (Amod Jupally, with photo) |
+| `/about` | Philosophy, principles, product-first, the founder (Amod Jupally) |
 | `/contact` | Functional enquiry form (demo / project / general), pre-filled from `?type=&product=&service=` |
 | `/privacy`, `/terms` | Drafts for legal review, with a sticky "On this page" index (it follows the section being read) and a contact card beside the text |
 | `*` | Custom 404 |
@@ -393,7 +393,6 @@ Homepage size, measured the same way before and after this change (same machine,
 
 **Assets**
 - [ ] **Original logo vector.** The logo in use is a trace of the supplied 1536 × 1024 JPG (see Brand above). If the designer has the original SVG, AI or PDF, swap it into `public/brand/` and `src/components/brand/logo-data.ts`; the favicon, touch icon and `og-image.png` were drawn from the same shapes and would be redone from it.
-- [ ] **Founder photo quality** (About page). The photo and bio are in (`public/brand/founder.webp`, `src/pages/About.tsx`). The photo is a 408 × 419 circular crop of a social-media avatar, shown as a circle; replace it with an original, higher-resolution portrait when there is one.
 - [ ] **Product figures** (the row of three figures on the home product stage and cards, and on each product page; `metrics` in `src/data/products.ts`). Anviksha shows the two figures supplied by the owner (10,000+ images processed, 150+ live users): confirm they are current. SiteVision, Digi Reco and Parichay show only facts taken from what the product does (for example nine passes per A4 sheet); no usage figures were supplied for them. Send real ones (users, records, sites) and add them as `{ label, value }` lines.
 - [ ] **Progress Tracker**: scope, capabilities, screenshots. All of its copy is placeholder.
 - [ ] **Robotic inspection dog.** The home section shows a concept render made for the site (procedural shapes, labelled "Concept render"), not the real robot. Confirm the company is happy to announce it publicly, whether it has a name, and send real renders, photos or video when they exist (they would replace the scene in `src/components/home/RobotDog.tsx`). "Register interest" enquiries arrive with interest `robotic-dog`.
