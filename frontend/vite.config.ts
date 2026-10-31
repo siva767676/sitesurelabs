@@ -17,6 +17,9 @@ export default defineConfig({
   // API_PROXY lets you point the dev server at another backend, e.g. API_PROXY=http://127.0.0.1:8001 npm run dev
   server: { port: 5173, allowedHosts, proxy: { '/api': process.env.API_PROXY ?? 'http://127.0.0.1:8000' } },
   preview: { allowedHosts },
+  // Only the Contact route uses these. Pre-bundling them at start-up stops Vite finding them on the first visit to
+  // /contact, re-optimising mid-session and failing that page's lazy import until the dev server is restarted.
+  optimizeDeps: { include: ['react-hook-form', '@hookform/resolvers/zod', 'zod'] },
   build: {
     // Never inline fonts as data: URIs: the production CSP (font-src 'self') would block them.
     assetsInlineLimit: (file) => (file.endsWith('.woff2') ? false : undefined),

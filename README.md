@@ -402,7 +402,7 @@ Homepage size, measured the same way before and after this change (same machine,
 - [ ] **Parichay recording.** It shows worker names and photos (illustrated avatars), Aadhaar-style numbers, contractor and site names and pass counts (434 in total), under the "My Home Group" brand. The site avoids the records table, but the pass preview and dashboard stills show some of it. Confirm it is demo data, or that it may be published; otherwise re-record with neutral data. The Parichay page makes no claim about the data being real or demo.
 
 **Business facts to confirm** (search the code for `CONFIRM`)
-- [ ] Contact mailbox (`hello@sitesurelabs.com` is a placeholder) and any postal address / phone.
+- [ ] Contact mailbox (`support@sitesurelabs.com` is a placeholder) and any postal address / phone.
 - [ ] Social profile links (none rendered until provided: `src/data/site.ts`).
 - [ ] The list of services is genuinely deliverable (`src/data/services.ts`).
 - [ ] About-page philosophy and principles wording (`src/data/site.ts`, `src/pages/About.tsx`), including the product-first claim.

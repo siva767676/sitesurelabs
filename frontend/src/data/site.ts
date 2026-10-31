@@ -7,7 +7,7 @@ export const site = {
   description:
     'SiteSureLabs builds AI-powered products and intelligent systems for enterprises: computer vision, document intelligence, LLM applications and workflow automation.',
   // CONFIRM: real contact mailbox. Placeholder until the domain mailbox exists.
-  email: 'hello@sitesurelabs.com',
+  email: 'support@sitesurelabs.com',
   // CONFIRM: registered address / city. Intentionally omitted until provided.
   address: null as string | null,
   // CONFIRM: social profile URLs. Left empty so no dead links are rendered.
