@@ -21,11 +21,13 @@ export function ErrorState({ title = 'Something went wrong', body = 'Please refr
   )
 }
 
-interface BoundaryProps { children: ReactNode; fallback: ReactNode; onError?: (e: Error) => void }
+interface BoundaryProps { children: ReactNode; fallback: ReactNode; onError?: (e: Error) => void; resetKey?: string }
 /** Generic error boundary, used to isolate WebGL failures from the rest of the page. */
 export class Boundary extends Component<BoundaryProps, { failed: boolean }> {
   state = { failed: false }
   static getDerivedStateFromError() { return { failed: true } }
-  componentDidCatch(e: Error) { this.props.onError?.(e) }
+  componentDidCatch(e: Error) { if (this.props.onError) this.props.onError(e); else console.error('[boundary]', e) }
+  /** A new resetKey (the route) clears a failure, so one broken page does not block the others. */
+  componentDidUpdate(prev: BoundaryProps) { if (this.state.failed && prev.resetKey !== this.props.resetKey) this.setState({ failed: false }) }
   render() { return this.state.failed ? this.props.fallback : this.props.children }
 }

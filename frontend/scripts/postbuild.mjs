@@ -24,15 +24,30 @@ for (const [, code] of template.matchAll(/<script>([\s\S]*?)<\/script>/g)) {
 }
 
 const pages = [
-  { path: '/', title: 'SiteSureLabs | AI Products & Enterprise Engineering', description: 'SiteSureLabs builds AI-powered products and intelligent systems for enterprises: computer vision, document intelligence, LLM applications and workflow automation.', index: true, priority: '1.0' },
-  { path: '/products', title: 'Products for Construction | SiteSureLabs', description: 'Anviksha, SiteVision, Digi Reco and Parichay: products from SiteSureLabs for construction quality inspection, 360° site capture, steel reconciliation and worker entry passes.', index: true, priority: '0.9' },
-  { path: '/services', title: 'AI & Engineering Services | SiteSureLabs', description: 'SiteSureLabs is a technology partner for custom AI: computer vision, document processing and OCR, LLM applications and RAG, AI agents, custom software and AI infrastructure.', index: true, priority: '0.9' },
-  { path: '/about', title: 'About | SiteSureLabs', description: 'SiteSureLabs is an AI product company building practical, product-first AI for enterprises.', index: true, priority: '0.6' },
-  { path: '/contact', title: 'Contact & Request a Demo | SiteSureLabs', description: 'Request a demo of Anviksha, SiteVision, Digi Reco or Parichay, or discuss a custom AI project with SiteSureLabs.', index: true, priority: '0.8' },
-  { path: '/privacy', title: 'Privacy Policy | SiteSureLabs', description: 'How SiteSureLabs collects and handles personal information submitted through this website.', index: true, priority: '0.3' },
-  { path: '/terms', title: 'Terms of Use | SiteSureLabs', description: 'Terms governing use of the SiteSureLabs website.', index: true, priority: '0.3' },
-  ...products.map((p) => ({ path: `/products/${p.slug}`, title: `${p.seo.title} | SiteSureLabs`, description: p.seo.description, index: p.verified, priority: '0.8' })),
+  { path: '/', title: 'SiteSureLabs | AI Products & Enterprise Engineering', description: 'SiteSureLabs builds AI-powered products and intelligent systems for enterprises: computer vision, document intelligence, LLMs and workflow automation.', index: true, priority: '1.0', h1: 'SiteSureLabs: AI products and enterprise engineering', crumb: 'Home' },
+  { path: '/products', title: 'Products for Construction | SiteSureLabs', description: 'Anviksha, SiteVision, Digi Reco and Parichay: construction products for quality inspection, 360° site capture, steel reconciliation and worker entry passes.', index: true, priority: '0.9', h1: 'Products for construction', crumb: 'Products' },
+  { path: '/services', title: 'AI & Engineering Services | SiteSureLabs', description: 'SiteSureLabs is a technology partner for custom AI: computer vision, document OCR, LLM apps and RAG, AI agents, custom software and AI infrastructure.', index: true, priority: '0.9', h1: 'AI and engineering services', crumb: 'Services' },
+  { path: '/about', title: 'About | SiteSureLabs', description: 'SiteSureLabs is an AI product company building practical, product-first AI for enterprises.', index: true, priority: '0.6', h1: 'About SiteSureLabs', crumb: 'About' },
+  { path: '/contact', title: 'Contact & Request a Demo | SiteSureLabs', description: 'Request a demo of Anviksha, SiteVision, Digi Reco or Parichay, or discuss a custom AI project with SiteSureLabs.', index: true, priority: '0.8', h1: 'Contact and request a demo', crumb: 'Contact' },
+  { path: '/privacy', title: 'Privacy Policy | SiteSureLabs', description: 'How SiteSureLabs collects and handles personal information submitted through this website.', index: true, priority: '0.3', h1: 'Privacy policy', crumb: 'Privacy Policy' },
+  { path: '/terms', title: 'Terms of Use | SiteSureLabs', description: 'Terms governing use of the SiteSureLabs website.', index: true, priority: '0.3', h1: 'Terms of use', crumb: 'Terms of Use' },
+  ...products.map((p) => ({ path: `/products/${p.slug}`, title: `${p.seo.title} | SiteSureLabs`, description: p.seo.description, index: p.verified, priority: '0.8', h1: p.name, crumb: p.name })),
 ]
+
+// Content for browsers and crawlers that do not run JavaScript: the page's heading, its description and a link to
+// every indexable page, so the site can be crawled by following plain links.
+const labelFor = (path, last) => pages.find((x) => x.path === path)?.crumb ?? last
+function noscript(p) {
+  const links = pages.filter((x) => x.index && x.path !== p.path).map((x) => `<li><a href="${x.path}" style="color:#F4F1EC">${esc(x.crumb ?? 'Home')}</a></li>`).join('')
+  return `<noscript>
+      <div style="padding:40px;font-family:system-ui;color:#F4F1EC;background:#141619">
+        <h1>${esc(p.h1 ?? 'SiteSureLabs')}</h1>
+        <p>${esc(p.description)}</p>
+        <p>Please enable JavaScript to view this site, or contact us at support@sitesurelabs.com.</p>
+        <nav aria-label="Site"><ul>${links}</ul></nav>
+      </div>
+    </noscript>`
+}
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
 
@@ -45,6 +60,16 @@ function render(p) {
     .replace(/<meta property="og:title"[^>]*>/, `<meta property="og:title" content="${esc(p.title)}" />`)
     .replace(/<meta property="og:description"[^>]*>/, `<meta property="og:description" content="${esc(p.description)}" />`)
     .replace(/<meta property="og:url"[^>]*>/, `<meta property="og:url" content="${url}" />`)
+    .replace(/<meta name="twitter:title"[^>]*>/, `<meta name="twitter:title" content="${esc(p.title)}" />`)
+    .replace(/<meta name="twitter:description"[^>]*>/, `<meta name="twitter:description" content="${esc(p.description)}" />`)
+    .replace(/<noscript>[\s\S]*?<\/noscript>/, noscript(p))
+  if (p.path !== '/' && p.index) {
+    const crumbs = p.path.split('/').filter(Boolean)
+    const trail = [{ name: 'Home', item: SITE }, ...crumbs.map((c, i) => ({ name: labelFor('/' + crumbs.slice(0, i + 1).join('/'), c), item: SITE + '/' + crumbs.slice(0, i + 1).join('/') }))]
+    const ld = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: trail.map((t, i) => ({ '@type': 'ListItem', position: i + 1, name: t.name, item: t.item })) }
+    html = html.replace('</head>', `  <script type="application/ld+json">${JSON.stringify(ld)}</script>
+  </head>`)
+  }
   if (!p.index) html = html.replace('</head>', '  <meta name="robots" content="noindex, nofollow" />\n  </head>')
   return html
 }
@@ -58,8 +83,7 @@ for (const p of pages) {
 // 404.html: served with a real 404 status by the web server; the SPA boots and renders its NotFound page.
 writeFileSync(join(dist, '404.html'), render({ path: '/404', title: 'Page not found | SiteSureLabs', description: 'The page you are looking for does not exist.', index: false }))
 
-const today = new Date().toISOString().slice(0, 10)
-const urls = pages.filter((p) => p.index).map((p) => `  <url><loc>${SITE}${p.path === '/' ? '/' : p.path}</loc><lastmod>${today}</lastmod><priority>${p.priority}</priority></url>`)
+const urls = pages.filter((p) => p.index).map((p) => `  <url><loc>${SITE}${p.path === '/' ? '/' : p.path}</loc><priority>${p.priority}</priority></url>`)
 writeFileSync(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`)
 
 console.log(`postbuild: ${pages.length} route pages, ${urls.length} sitemap URLs, 404.html`)

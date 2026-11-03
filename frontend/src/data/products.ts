@@ -190,8 +190,8 @@ export const products: Product[] = [
       { q: 'Who uses it?', a: 'Field engineers capture, managers review, admins set up projects and leadership asks Drishti.' },
     ],
     seo: {
-      title: 'SiteVision: 360° Construction Site Capture and AI Progress',
-      description: 'SiteVision by SiteSureLabs captures construction sites in 360° against the floor plan, publishes walkable tours and tracks progress with AI and the Drishti assistant.',
+      title: 'SiteVision: 360° Site Capture and AI Progress',
+      description: 'SiteVision by SiteSureLabs captures construction sites in 360° against the floor plan, publishes walkable tours and tracks progress with AI.',
     },
     metrics: [
       { label: 'Projects', value: '3' },
@@ -260,8 +260,8 @@ export const products: Product[] = [
       { q: 'Is the demo data real?', a: 'No. Figures in our demonstration are demo data, not performance results.' },
     ],
     seo: {
-      title: 'Digi Reco: Steel Reconciliation for Construction',
-      description: 'Digi Reco by SiteSureLabs turns monthly site workbooks into ledgers and a steel abstract by diameter, with cross-checks, exceptions and a portfolio wastage dashboard.',
+      title: 'Digi Reco: Construction Steel Reconciliation',
+      description: 'Digi Reco by SiteSureLabs turns monthly site workbooks into ledgers and a steel abstract by diameter, with cross-checks and a wastage dashboard.',
     },
     metrics: [
       { label: 'Steel records processed', value: '80,800' },
@@ -331,8 +331,8 @@ export const products: Product[] = [
       { q: 'What does the pass carry?', a: 'The worker’s photo, contractor, labour-camp badge, a site watermark and the supervisor’s contact.' },
     ],
     seo: {
-      title: 'Parichay: Worker Registration and Entry Passes for Construction Sites',
-      description: 'Parichay by SiteSureLabs registers workers at the site gate, flags duplicates across sites, prints entry passes in batches and gives administrators a dashboard of every site.',
+      title: 'Parichay: Worker Registration & Entry Passes',
+      description: 'Parichay by SiteSureLabs registers workers at the gate, flags duplicates across sites, prints entry passes in batches and tracks every site on one dashboard.',
     },
     metrics: [
       { label: 'Sites', value: '10' },

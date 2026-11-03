@@ -11,7 +11,7 @@ export default function Services() {
     <>
       <Seo
         title="AI & Engineering Services"
-        description="SiteSureLabs is a technology partner for custom AI: computer vision, document processing and OCR, LLM applications and RAG, AI agents, custom software and AI infrastructure."
+        description="SiteSureLabs is a technology partner for custom AI: computer vision, document OCR, LLM apps and RAG, AI agents, custom software and AI infrastructure."
         path="/services"
       />
       <PageHero

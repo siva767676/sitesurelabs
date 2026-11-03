@@ -20,7 +20,6 @@ export default function Home() {
         title="SiteSureLabs | AI Products & Enterprise Engineering"
         description={site.description}
         path="/"
-        jsonLd={{ '@context': 'https://schema.org', '@type': 'Organization', name: site.name, url: site.url, logo: `${site.url}/brand/logo.svg`, description: site.description }}
       />
       <Hero />
       <ProductScroll />

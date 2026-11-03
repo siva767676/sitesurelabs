@@ -20,10 +20,13 @@ export function Turnstile({ onToken, resetKey }: { onToken: (t: string | null) =
     let cancelled = false
     const mount = () => {
       if (cancelled || !window.turnstile || !ref.current) return
-      id.current = window.turnstile.render(ref.current, {
-        sitekey: turnstileSiteKey, theme: 'dark',
-        callback: (t: string) => onToken(t), 'expired-callback': () => onToken(null), 'error-callback': () => onToken(null),
-      })
+      // A bad site key or a blocked script must not take the whole page down: the form still works without the widget.
+      try {
+        id.current = window.turnstile.render(ref.current, {
+          sitekey: turnstileSiteKey, theme: 'dark',
+          callback: (t: string) => onToken(t), 'expired-callback': () => onToken(null), 'error-callback': () => onToken(null),
+        })
+      } catch (e) { console.warn('Turnstile could not start', e) }
     }
     if (window.turnstile) mount()
     else {
@@ -31,7 +34,7 @@ export function Turnstile({ onToken, resetKey }: { onToken: (t: string | null) =
       if (!s) { s = document.createElement('script'); s.src = SRC; s.async = true; document.head.appendChild(s) }
       s.addEventListener('load', mount)
     }
-    return () => { cancelled = true; if (id.current) window.turnstile?.remove(id.current) }
+    return () => { cancelled = true; try { if (id.current) window.turnstile?.remove(id.current) } catch { /* widget already gone */ } }
   }, [onToken, resetKey])
 
   if (!turnstileSiteKey) return null

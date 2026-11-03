@@ -41,7 +41,7 @@ npm run dev
 | --- | --- |
 | `python -m pytest` | 31 API tests (validation, spam, rate limit, auth, CORS, persistence, and SQLite itself: UTC timestamps, the 24-hour duplicate window, WAL mode, concurrent writers, notification results saved, in-memory databases, non-SQLite URLs refused) |
 
-`npm run build` also writes, per route, `dist/<route>/index.html` with its own title, description, canonical and Open Graph tags (plus `noindex` for placeholder pages), `dist/sitemap.xml`, and `dist/404.html`. This gives crawlers correct metadata without a server-rendered framework. See [Decisions](#decisions-worth-knowing).
+`npm run build` also writes, per route, `dist/<route>/index.html` with its own title, description, canonical and Open Graph tags (plus `noindex` for placeholder pages), Twitter tags, a breadcrumb schema, and a no-JavaScript heading with links to every page, `dist/sitemap.xml`, and `dist/404.html`. This gives crawlers correct metadata without a server-rendered framework. See [Decisions](#decisions-worth-knowing).
 
 ---
 

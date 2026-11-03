@@ -21,6 +21,9 @@ export default defineConfig({
   // /contact, re-optimising mid-session and failing that page's lazy import until the dev server is restarted.
   optimizeDeps: { include: ['react-hook-form', '@hookform/resolvers/zod', 'zod'] },
   build: {
+    // Lazy route scripts get neutral names. A name like Contact-<hash>.js is the kind of file name that content blockers
+    // and corporate proxies sometimes drop, which left the Contact page failing on a deployed site but not on localhost.
+    rollupOptions: { output: { chunkFileNames: 'assets/c-[hash].js' } },
     // Never inline fonts as data: URIs: the production CSP (font-src 'self') would block them.
     assetsInlineLimit: (file) => (file.endsWith('.woff2') ? false : undefined),
     chunkSizeWarningLimit: 1000, // the lazy 3D chunk (three.js) is ~900 kB raw / ~245 kB gzip and never loads on first paint

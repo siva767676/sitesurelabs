@@ -13,7 +13,7 @@ export default function Products() {
     <>
       <Seo
         title="Products for Construction"
-        description="Anviksha, SiteVision, Digi Reco and Parichay: products from SiteSureLabs for construction quality inspection, 360° site capture, steel reconciliation and worker entry passes."
+        description="Anviksha, SiteVision, Digi Reco and Parichay: construction products for quality inspection, 360° site capture, steel reconciliation and worker entry passes."
         path="/products"
         jsonLd={{
           '@context': 'https://schema.org', '@type': 'ItemList',
