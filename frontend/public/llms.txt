@@ -11,7 +11,11 @@ This file is an optional, plain-text summary for language models and other autom
 - [Digi Reco](https://sitesurelabs.com/products/digi-reco): Steel reconciliation for construction. Monthly site workbooks become ledgers and a steel abstract by diameter, with cross-checks and exceptions.
 - [Parichay](https://sitesurelabs.com/products/parichay): Worker registration and entry passes for construction sites, with duplicate flagging and a multi-site administrator dashboard.
 
-<!-- Guides are listed here only after the owner and product teams approve the articles (review: 'approved' in src/data/articles.ts). -->
+## Guides
+
+- [Digital Construction Inspection: A Practical Guide](https://sitesurelabs.com/blog/digital-construction-inspection-guide)
+- [Manual vs AI-Powered Construction Inspections](https://sitesurelabs.com/blog/manual-vs-ai-construction-inspection)
+- [360° Construction Site Documentation: How It Works](https://sitesurelabs.com/blog/360-degree-construction-documentation)
 
 ## Company
 

@@ -290,3 +290,23 @@ test('the homepage says what the company does', () => {
   assert.match(unescape(meta(html['/'], 'name', 'description')[0]), /construction/i)
   assert.match(all(html['/'], /<title>([\s\S]*?)<\/title>/g)[0], /Construction/i)
 })
+
+test('approved articles are public: indexable, in the sitemap, the blog list, the nav and llms.txt', async () => {
+  const { articles } = await import(pathToFileURL(entry).href)
+  const approved = articles.filter((x) => x.review === 'approved')
+  const sitemap = read(join(dist, 'sitemap.xml'))
+  const llms = read(join(dist, 'llms.txt'))
+  if (approved.length === 0) return
+  assert.ok(sitemap.includes(`<loc>${site.url}/blog</loc>`), '/blog must be in the sitemap once an article is approved')
+  assert.ok(!/<meta name="robots" content="noindex/.test(html['/blog']), '/blog must be indexable once an article is approved')
+  for (const p of pages.filter((x) => !x.path.startsWith('/blog'))) assert.ok(html[p.path].includes('href="/blog"'), `${p.path}: Blog link missing from the nav`)
+  for (const a of approved) {
+    const path = `/blog/${a.slug}`
+    assert.ok(sitemap.includes(`<loc>${site.url}${path}</loc>`), `${path}: missing from the sitemap`)
+    assert.match(sitemap, new RegExp(`<loc>${site.url}${path}</loc><lastmod>\\d{4}-\\d{2}-\\d{2}</lastmod>`), `${path}: lastmod missing`)
+    assert.ok(!/<meta name="robots" content="noindex/.test(html[path]), `${path}: approved article must be indexable`)
+    assert.ok(!html[path].includes('DRAFT, pending review'), `${path}: draft banner still shown`)
+    assert.ok(html['/blog'].includes(`href="${path}"`), `/blog does not list ${path}`)
+    assert.ok(llms.includes(`${site.url}${path}`), `${path}: missing from llms.txt`)
+  }
+})

@@ -8,6 +8,8 @@ COPY . .
 ARG VITE_API_URL=
 ARG VITE_TURNSTILE_SITE_KEY=
 ENV VITE_API_URL=$VITE_API_URL VITE_TURNSTILE_SITE_KEY=$VITE_TURNSTILE_SITE_KEY
+# Refuse to build an image that contains a blog article the owner has not approved (see src/data/articles.ts).
+ENV SEO_REQUIRE_REVIEWED=1
 RUN npm run build
 
 # --- serve ---

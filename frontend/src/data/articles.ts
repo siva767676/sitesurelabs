@@ -44,7 +44,7 @@ export interface Article {
 export const articles: Article[] = [
   {
     slug: 'digital-construction-inspection-guide',
-    review: 'pending', // Anviksha team
+    review: 'approved', // approved by the owner 2026-11-04; Anviksha team to confirm product statements
     title: 'Digital Construction Inspection: A Practical Guide',
     seoTitle: 'Digital Construction Inspection: A Practical Guide',
     description: 'What digital construction inspection is, how a site inspection runs from capture to closure, what to look for in software, and where AI helps and where it does not.',
@@ -102,7 +102,7 @@ export const articles: Article[] = [
   },
   {
     slug: 'manual-vs-ai-construction-inspection',
-    review: 'pending', // Anviksha team
+    review: 'approved', // approved by the owner 2026-11-04; Anviksha team to confirm product statements
     title: 'Manual vs AI-Powered Construction Inspections',
     seoTitle: 'Manual vs AI-Powered Construction Inspections',
     description: 'A practical comparison of manual and AI-assisted construction inspections: what changes in speed, consistency and records, what does not change, and how to combine both.',
@@ -161,7 +161,7 @@ export const articles: Article[] = [
   },
   {
     slug: '360-degree-construction-documentation',
-    review: 'pending', // SiteVision team
+    review: 'approved', // approved by the owner 2026-11-04; SiteVision team to confirm product statements
     title: '360° Construction Site Documentation: How It Works',
     seoTitle: '360° Construction Site Documentation: How It Works',
     description: 'How 360 degree construction site documentation works: capturing against floor plans, building walkthroughs, tracking progress over time, and the limits of what images can show.',
