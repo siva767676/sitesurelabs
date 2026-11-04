@@ -1,6 +1,6 @@
 # SiteSureLabs: SEO Production Readiness Checklist
 
-Status: **NOT DEPLOYED.** The code is complete, merged with the latest `origin/main` and tested; the image build and deployment are waiting on one decision (see the update below). Prepared 2026-11-04 on `feature/sitesurelabs-seo-implementation`. **Nothing has been deployed and nothing on the live server was changed.**
+Status: **DEPLOYED to production on 2026-11-04** (web container only; see section 15). Code on branch `feature/sitesurelabs-seo-implementation`, commit `83f594f`, pushed to GitHub and not merged into `main`. Items still open for the owner are listed at the end of section 15.
 
 > **How to read status in these SEO documents.** **Implemented in code** = on the feature branch, uncommitted, not deployed and not live. **Owner action** = needs you or a named team. **External activity** = done outside the repo; none of it has been done. Authoritative workstream status: `SEO_FINAL_REVIEW.md`.
 
@@ -19,15 +19,15 @@ The owner approved the three articles and asked for the remaining work, image bu
 | SSL certificate for `www` | **Verified**: the certificate covers both `sitesurelabs.com` and `www.sitesurelabs.com` (valid to 27 Jan 2027) |
 | Backend | Identical to what production runs (no diff against `82f0847`), so the API container does not need replacing |
 | Docker image build, `nginx -t`, status matrix | **Done and passed (2026-11-04).** Docker Desktop was installed after all (in the user profile) and was started. Both images built from a clean export of commit `7fe11b6`; `nginx -t` is OK; the matrix (`deploy/verify-image-matrix.sh`) passed **65 of 65 checks**: all 16 routes, every redirect (`/about/`, `/about/index.html`, `/index.html`, query kept, `/products/sitevision` in one hop), real 404s, security headers on pages, `/assets`, `/media` and `/api`, the 13-URL sitemap. The strict review gate is in the image build; the backend smoke test passed |
-| ECR images | **Pushed.** `sitesurelabs-frontend:7fe11b6323fd` and `:latest` = `sha256:0463410560ef1c5d7d53c69692d2519a6ed0e313842ac5391895d281243f9f07` (matches the tested local image); `sitesurelabs-backend:7fe11b6323fd` and `:latest` = `sha256:3a7c7d2876fc7be522da98b321cd0db252491d6fc16ad30832d225b0355a1687`. The temporary login was removed from this machine. The S3 bucket and the CodeBuild definition turned out to be unnecessary and are not used |
-| Deployment to production | **Not done. One step is blocked:** getting the image onto the production host. The rollback tag `sitesurelabs-web:pre-seo-20261104` (image `d4243c9ab6be`) was created on the host; nothing else there was changed. See the options at the end of section 14 |
+| ECR images | **Pushed.** Frontend `:83f594fb4009` / `:latest` = `sha256:304e7ae3e40beacc5063b226ea2ed3894cf1f7c9d3f7d3d60f0c44e33adbd756` (deployed); earlier frontend `:7fe11b6323fd` = `sha256:0463410560ef...` (release 1, kept as a rollback tag on the server). Backend `:7fe11b6323fd` / `:latest` = `sha256:3a7c7d2876fc...` (not deployed: unchanged). The S3 bucket and the CodeBuild definition were not needed |
+| Deployment to production | **Done (2026-11-04).** Web container replaced with the image `sitesurelabs-frontend:83f594fb4009`; API, data and server config untouched; 65 of 65 checks passed on the spare port, the live port and the public site; live Lighthouse mobile 93 / desktop 95, SEO and accessibility 100. See section 15 |
 | HSTS and www to apex redirect on the host nginx | Owner action (the owner said they will do these after the deploy). Not touched |
 | Privacy and Terms | Still `noindex` and out of the sitemap, pending legal review |
 | Real phone testing | Owner action |
 | Rich Results Test, Schema.org Validator | After deploy |
 | Stage 4 analytics | Not started: needs the GA4 ID and the consent decision |
 
-**What is blocking the deployment.** The host's role (`AnvikshaEC2Role`, shared with other products) can only pull the other products' images, and it has no AWS CLI. To pull `sitesurelabs-*` images it needs a pull credential. The two safe ways of providing one (a temporary encrypted Parameter Store entry, or a new role) were blocked by the permission check as credential and permission changes, correctly, so they need the owner's explicit decision. Options are at the end of section 14.
+**How the blocker was resolved.** The server's role could only pull other products' images. The owner applied a pull-only ECR repository policy (`deploy/ecr-pull-policy.json`) on the two new repositories; the server then pulled through its own role. No credential was passed to the server, and the shared role was not changed.
 
 Legend: `[x]` verified now, `[ ]` not done, **[OWNER]** needs you, **[SERVER]** needs access to the host server, **[DOCKER]** needs Docker running, **[DEPLOYED]** only possible after deployment.
 
@@ -268,10 +268,58 @@ Alternatives if the role is not approved: (1) build on the production host with 
 
 **What stays the same in production**: `docker-compose.yml`, `.env`, the API container and its image, the data volume, the host nginx and certificates, and every other server.
 
-**Options to get the verified image onto the host (owner to choose):**
+**Options that were considered (resolved by the repository policy, see section 15):**
 
 1. **Approve a temporary pull credential** (a short-lived encrypted Parameter Store entry holding an ECR pull token, deleted right after the pull). Then: pull `sitesurelabs-frontend@sha256:0463410560ef...`, run it on a spare port next to production, run the matrix on the host, swap only the web container, verify, keep the rollback tag.
 2. **Build on the host** from the committed code (how it has always been deployed: `git fetch`, check out `7fe11b6`, `docker compose build web`, then the same spare-port check and swap). No credential is involved, but the image would be a rebuild (not byte-identical to the one in ECR), and a node build on a 2 GB server that is 79% full carries some risk to the running site.
 3. **Transfer the image as a file**: save it locally, upload it to a private, expiring location and download it on the host with a time-limited link (this would use the S3 bucket created earlier).
 
-Production is unchanged until one is chosen.
+## 15. Deployment record (2026-11-04)
+
+**Deployed to production: the web container only.** Nothing else was changed on the server.
+
+| Item | Detail |
+|---|---|
+| Code | Branch `feature/sitesurelabs-seo-implementation`, commit `83f594f` (merged with the latest `origin/main`). Pushed to GitHub. **Not merged into `main`** |
+| Image | ECR `196338354246.dkr.ecr.ap-south-1.amazonaws.com/sitesurelabs-frontend:83f594fb4009` (also `:latest`), digest `sha256:304e7ae3e40beacc5063b226ea2ed3894cf1f7c9d3f7d3d60f0c44e33adbd756`. Backend image `sitesurelabs-backend:7fe11b6323fd` / `:latest` (`sha256:3a7c7d28...`) is in ECR but **was not deployed**: the backend is identical to what production already runs |
+| Server | EC2 `i-0a0585c546363305e`. Pulled with the server's own role after the owner applied the repository policy in `deploy/ecr-pull-policy.json` (no credential was passed to the server). The temporary AWS CLI container image was removed afterwards |
+| Method | Pull, run on a spare localhost-only port next to production, run the 65-check matrix there, then `docker compose up -d --no-build --no-deps web` (recreates only `web`), then the matrix again on port 8080 and through the public HTTPS site. Automatic rollback was armed |
+| Result | Web container healthy; 65 of 65 checks passed three times (spare port, live port, public site). API container unchanged (same container id, up 25 hours). Data volume, `.env`, `docker-compose.yml`, host nginx and the other servers untouched |
+| Outside check | All baseline URLs unchanged (200/301/404 as before); `/blog` and the three articles went from 404 to 200; one H1, title and canonical per page, no browser console errors on `/`, `/contact`, `/products/anviksha`, `/blog`; Contact form renders |
+
+**Two releases were deployed, and the first one had a problem that was found by measuring and fixed.** Release 1 (commit `7fe11b6`) made the hero text invisible until JavaScript hydrated, which pushed mobile LCP to about 7 s. It was caught with Lighthouse on the live URL, reproduced locally against the old site (old: LCP 1.0 s; release 1: 5.4 s), fixed by moving the above-the-fold entrance animations to CSS, and released as release 2 (commit `83f594f`). Release 1 was live for about an hour.
+
+**Live Lighthouse after release 2 (lab data, `https://sitesurelabs.com/`)**
+
+| | Performance | SEO | Accessibility | Best practices | FCP | LCP | TBT | CLS |
+|---|---|---|---|---|---|---|---|---|
+| Mobile | 93 | 100 | 100 | 100 | 1.4 s | 1.4 s | 280 ms | 0 |
+| Desktop | 95 | 100 | 100 | 100 | 0.4 s | 0.4 s | 170 ms | 0 |
+
+(Run locally with Lighthouse 13.6 and Chrome; Google's own PageSpeed Insights could not be used because its anonymous daily quota was exhausted. Field data from real users needs about 28 days of traffic in Search Console.)
+
+**Rollback (seconds), on the server, as root:**
+
+```bash
+cd /home/ubuntu/sitesurelabs
+# back to release 1 (first SEO release):
+docker tag sitesurelabs-web:seo-v1-7fe11b6323fd sitesurelabs-web:latest && docker compose up -d --no-build --no-deps web
+# or back to the exact pre-SEO site:
+docker tag sitesurelabs-web:pre-seo-20261104 sitesurelabs-web:latest && docker compose up -d --no-build --no-deps web
+```
+
+The two rollback tags stay on the server (about 180 MB each; disk is about 80% used, so remove them with `docker rmi` once you are happy).
+
+**Important for future deployments.** The server's repo (`/home/ubuntu/sitesurelabs`) tracks `main`, which does **not** contain this work. Running `git pull && docker compose up -d --build` there would rebuild the OLD site and undo it. Merge `feature/sitesurelabs-seo-implementation` into `main` (a pull request is open at `https://github.com/siva767676/sitesurelabs/pull/new/feature/sitesurelabs-seo-implementation`) and then pull on the server, or keep deploying from ECR images.
+
+**Still open (not done, owner or later):**
+
+- HSTS and the www to apex redirect on the host nginx (the owner said they will do these; snippets in `SEO_DEPLOYMENT_CHECKLIST.md`). `www.sitesurelabs.com` still serves a duplicate page.
+- Real iPhone and Android testing.
+- Google Rich Results Test and Schema.org Validator on the live URLs (they have no API).
+- Search Console and Bing: verify, submit `https://sitesurelabs.com/sitemap.xml`, request indexing.
+- Legal review of Privacy and Terms (still `noindex` and out of the sitemap).
+- Product-team confirmation of the four flagged article statements.
+- The founder bio now live (from `main`) names "My Home Constructions" and says the tools are deployed across its sites; the owner should confirm that wording.
+- Delete the unused S3 bucket `sitesurelabs-build-src-196338354246` (the owner said they will).
+- Stage 4 analytics: needs the GA4 ID and the consent decision.
