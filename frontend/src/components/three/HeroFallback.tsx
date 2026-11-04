@@ -3,6 +3,10 @@ import { useMemo } from 'react'
 /** Static SVG rendering of the hero sphere. Shown instantly on first paint, when WebGL is
  *  unavailable, on low-power devices and for reduced-motion users. */
 
+// Rounded so the server-prerendered SVG and the browser's re-computation print identical attribute values: Math.sin/cos
+// can differ in the last digits between Node and the browser, which React would report as a hydration mismatch.
+const r2 = (n: number) => Math.round(n * 100) / 100
+
 function build() {
   const dots: { x: number; y: number; r: number; o: number }[] = []
   const n = 900
@@ -20,7 +24,7 @@ function build() {
     yy = y2; z = z2
     if (z < -0.1) continue
     const land = Math.sin(x * 2.3 + 1.1) * Math.cos(yy * 2.9 - 0.7) + Math.sin(z * 3.7 + x * 1.9) * 0.6 > 0.18
-    dots.push({ x: 300 + x * 230, y: 300 + yy * 230, r: land ? 2.1 : 1.2, o: (land ? 0.9 : 0.25) * (0.35 + 0.65 * Math.max(z, 0)) })
+    dots.push({ x: r2(300 + x * 230), y: r2(300 + yy * 230), r: land ? 2.1 : 1.2, o: r2((land ? 0.9 : 0.25) * (0.35 + 0.65 * Math.max(z, 0))) })
   }
   return dots
 }

@@ -1,4 +1,5 @@
 import { site } from '@/data/site'
+import { canonicalUrl } from '@/data/seo'
 
 interface SeoProps {
   title: string
@@ -6,21 +7,32 @@ interface SeoProps {
   path: string
   image?: string
   noindex?: boolean
+  /** Pass false for pages that have no canonical address (the 404 page). */
+  canonical?: boolean
+  /** From data/seo.ts: false means noindex. */
+  index?: boolean
+  /** og:type. Articles also carry their real publish and modify dates. */
+  type?: 'website' | 'article'
+  published?: string
+  modified?: string
   jsonLd?: Record<string, unknown> | Record<string, unknown>[]
 }
 
 /** React 19 hoists <title>, <meta> and <link> rendered anywhere into <head>. */
-export function Seo({ title, description, path, image = '/og-image.png', noindex, jsonLd }: SeoProps) {
+export function Seo({ title, description, path, image = '/og-image.png', noindex, index = true, canonical = true, type = 'website', published, modified, jsonLd }: SeoProps) {
   const full = title.includes('SiteSureLabs') ? title : `${title} | SiteSureLabs`
-  const url = `${site.url}${path === '/' ? '' : path}`
+  const url = canonicalUrl(path)
+  const hidden = noindex || !index
   const img = image.startsWith('http') ? image : `${site.url}${image}`
   return (
     <>
       <title>{full}</title>
       <meta name="description" content={description} />
-      <link rel="canonical" href={url} />
-      {noindex && <meta name="robots" content="noindex, nofollow" />}
-      <meta property="og:type" content="website" />
+      {canonical && <link rel="canonical" href={url} />}
+      {hidden && <meta name="robots" content="noindex, nofollow" />}
+      <meta property="og:type" content={type} />
+      {type === 'article' && published && <meta property="article:published_time" content={published} />}
+      {type === 'article' && (modified ?? published) && <meta property="article:modified_time" content={modified ?? published} />}
       <meta property="og:site_name" content={site.name} />
       <meta property="og:title" content={full} />
       <meta property="og:description" content={description} />

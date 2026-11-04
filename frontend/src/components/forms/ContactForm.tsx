@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertCircle, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { ApiError, submitEnquiry, type EnquiryResponse } from '@/lib/api'
-import { budgets, enquirySchema, interests, timelines, type EnquiryForm } from '@/lib/validation'
+import { budgets, enquirySchema, interestForProduct, interests, timelines, type EnquiryForm } from '@/lib/validation'
 import { Turnstile, turnstileSiteKey } from './Turnstile'
 
 const kinds = [
@@ -34,7 +34,7 @@ const control = 'w-full min-h-[52px] rounded-[var(--radius-md)] border border-[v
 export function ContactForm() {
   const [params] = useSearchParams()
   const t = params.get('type')
-  const product = params.get('product')
+  const product = interestForProduct(params.get('product'))
   const service = params.get('service')
 
   const startedAt = useRef(0)

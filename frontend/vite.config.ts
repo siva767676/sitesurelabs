@@ -11,7 +11,7 @@ const allowedHosts = [
   ...(process.env.ALLOWED_HOSTS?.split(',').map((h) => h.trim()).filter(Boolean) ?? []),
 ]
 
-export default defineConfig({
+export default defineConfig(({ isSsrBuild }) => ({
   plugins: [react(), tailwindcss()],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   // API_PROXY lets you point the dev server at another backend, e.g. API_PROXY=http://127.0.0.1:8001 npm run dev
@@ -21,5 +21,6 @@ export default defineConfig({
     // Never inline fonts as data: URIs: the production CSP (font-src 'self') would block them.
     assetsInlineLimit: (file) => (file.endsWith('.woff2') ? false : undefined),
     chunkSizeWarningLimit: 1000, // the lazy 3D chunk (three.js) is ~900 kB raw / ~245 kB gzip and never loads on first paint
+    copyPublicDir: !isSsrBuild, // the server bundle (build-time prerender only) needs no copy of public/
   },
-})
+}))

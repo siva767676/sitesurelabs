@@ -1,0 +1,20 @@
+# SiteSureLabs
+
+> SiteSureLabs builds AI-powered construction technology and enterprise software that improve construction inspection, project visibility, operational efficiency and digital transformation.
+
+This file is an optional, plain-text summary for language models and other automated readers. It is not a ranking signal for any search engine. The pages linked below are the authoritative source.
+
+## Products
+
+- [Anviksha](https://sitesurelabs.com/products/anviksha): AI construction quality inspection. Photographs of site defects become located, rated and explained observations, and quality observation reports.
+- [SiteVision](https://sitesurelabs.com/products/site-vision): 360° construction site capture against the floor plan, walkable tours, and AI-assisted progress tracking with the Drishti assistant.
+- [Digi Reco](https://sitesurelabs.com/products/digi-reco): Steel reconciliation for construction. Monthly site workbooks become ledgers and a steel abstract by diameter, with cross-checks and exceptions.
+- [Parichay](https://sitesurelabs.com/products/parichay): Worker registration and entry passes for construction sites, with duplicate flagging and a multi-site administrator dashboard.
+
+<!-- Guides are listed here only after the owner and product teams approve the articles (review: 'approved' in src/data/articles.ts). -->
+
+## Company
+
+- [About SiteSureLabs](https://sitesurelabs.com/about)
+- [Services: custom AI and engineering](https://sitesurelabs.com/services)
+- [Contact and demo requests](https://sitesurelabs.com/contact)

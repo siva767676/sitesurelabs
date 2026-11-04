@@ -47,7 +47,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-12 flex flex-col gap-1 border-t border-[var(--color-line)] pt-6 text-[var(--fs-caption)] text-[var(--color-muted)] md:flex-row md:items-center md:justify-between lg:mt-20 lg:gap-4 lg:pt-8">
-          <p>© {new Date().getFullYear()} SiteSureLabs. All rights reserved.</p>
+          <p suppressHydrationWarning>© {new Date().getFullYear()} SiteSureLabs. All rights reserved.</p>
           <ul className="flex flex-wrap gap-x-6 gap-y-0 lg:gap-y-2">
             {legalNav.map((l) => <li key={l.to}><Link to={l.to} className="tap hover:text-[var(--color-fg)]">{l.label}</Link></li>)}
           </ul>

@@ -5,7 +5,7 @@ import { dur, ease, stagger } from '@/design/tokens'
 interface TextRevealProps {
   /** One string per visual line. Wrap words in *asterisks* to accent them. */
   lines: string[]
-  as?: 'h1' | 'h2' | 'h3' | 'p'
+  as?: 'h1' | 'h2' | 'h3' | 'p' | 'span'
   id?: string
   className?: string
   /** 'char' = letter by letter, 'word' = word by word */
@@ -13,6 +13,8 @@ interface TextRevealProps {
   delay?: number
   /** animate on mount instead of when scrolled into view */
   immediate?: boolean
+  /** The text is read from a parent that already names it (e.g. an <h1> with an aria-label): hide this copy from assistive tech. */
+  decorative?: boolean
 }
 
 interface Token { text: string; accent: boolean }
@@ -36,9 +38,10 @@ const parse = (line: string): Token[][] => {
   return words.filter((w) => w.length)
 }
 
-/** Accessible masked text reveal. The full sentence is exposed to assistive tech once via sr-only text;
- *  the animated glyph spans are aria-hidden. */
-export function TextReveal({ lines, as = 'h2', id, className = '', by = 'word', delay = 0, immediate }: TextRevealProps) {
+/** Accessible masked text reveal. A heading is named once, by aria-label; the animated glyph spans are aria-hidden.
+ *  The DOM (and so the prerendered HTML) holds ONE copy of the text, with a space between lines, so crawlers and
+ *  text extractors read the heading as a sentence, not a hidden duplicate plus a letter-by-letter copy. */
+export function TextReveal({ lines, as = 'h2', id, className = '', by = 'word', delay = 0, immediate, decorative }: TextRevealProps) {
   const reduced = useReducedMotion()
   const Tag = motion[as]
   const plain = lines.map((l) => l.replace(/\*/g, '')).join(' ')
@@ -70,11 +73,12 @@ export function TextReveal({ lines, as = 'h2', id, className = '', by = 'word', 
     : { initial: 'hidden', whileInView: 'show', viewport: { once: true, margin: '0px 0px -10% 0px' } }
 
   return (
-    <Tag id={id} className={className} {...trigger}>
-      <span className="sr-only">{plain}</span>
+    <Tag id={id} className={className} {...(decorative ? { 'aria-hidden': true } : as === 'span' ? {} : { 'aria-label': plain })} {...trigger}>
+      {as === 'span' && !decorative && <span className="sr-only">{plain}</span>}
       <span aria-hidden="true" className="block">
         {parsed.map((words, li) => (
           <span key={li} className="block">
+            {li > 0 && ' '}
             {words.map((word, wi) => (
               <Fragment key={wi}>
                 <span className="inline-block overflow-hidden align-top" style={{ paddingBlock: '0.1em', marginBlock: '-0.1em' }}>

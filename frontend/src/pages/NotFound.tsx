@@ -5,7 +5,7 @@ import { DottedText } from '@/components/ui/DottedText'
 export default function NotFound() {
   return (
     <>
-      <Seo title="Page not found" description="The page you are looking for does not exist." path="/404" noindex />
+      <Seo title="Page not found" description="The page you are looking for does not exist." path="/404" noindex canonical={false} />
       <section className="flex min-h-[100svh] flex-col justify-center pt-[var(--header-h)]">
         <div className="container-x">
           <p className="t-label mb-6">Error 404</p>

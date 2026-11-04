@@ -8,19 +8,10 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/svg+xml" sizes="any" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <title>SiteSureLabs | AI Products & Enterprise Engineering</title>
-    <meta name="description" content="SiteSureLabs builds AI-powered products and intelligent systems for enterprises: computer vision, document intelligence, LLM applications and workflow automation." />
-    <link rel="canonical" href="https://sitesurelabs.com" />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="SiteSureLabs" />
-    <meta property="og:title" content="SiteSureLabs | AI Products & Enterprise Engineering" />
-    <meta property="og:description" content="AI-powered products and intelligent systems that help businesses see more clearly, work smarter and turn complex problems into actionable outcomes." />
-    <meta property="og:url" content="https://sitesurelabs.com" />
-    <meta property="og:image" content="https://sitesurelabs.com/og-image.png" />
+    <!--seo-head: per-route <title>, description, canonical, Open Graph and Twitter tags (from components/ui/Seo.tsx) are inserted here by scripts/postbuild.mjs-->
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="SiteSureLabs: intelligence engineered for the real world." />
-    <meta name="twitter:card" content="summary_large_image" />
     <!-- Applies the saved theme before first paint so there is no flash. Its SHA-256 is allow-listed in nginx.conf's
          Content-Security-Policy; scripts/postbuild.mjs fails the build if the two drift apart. Keep it on one line. -->
     <script>(function(){var t='dark';try{var s=localStorage.getItem('ssl-theme');if(s==='light'||s==='dark')t=s}catch(e){}document.documentElement.setAttribute('data-theme',t);if(t==='light'){var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content','#F7F4EF')}})()</script>
@@ -29,10 +20,9 @@
   <body>
     <div id="root"></div>
     <noscript>
-      <div style="padding:40px;font-family:system-ui;color:#F4F1EC;background:#141619">
-        <h1>SiteSureLabs</h1>
-        <p>AI-powered products and custom AI engineering. Products: Anviksha, SiteVision, Digi Reco, Parichay. Please enable JavaScript to view this site, or contact us at hello@sitesurelabs.com.</p>
-      </div>
+      <!-- Pages are prerendered, so the content is already in the HTML. This only un-hides text and images that the
+           scroll animations start hidden, for visitors who browse without JavaScript. -->
+      <style>[style*="opacity:0"],[style*="opacity: 0"],[style*="clip-path"]{opacity:1!important;transform:none!important;clip-path:none!important}</style>
     </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>

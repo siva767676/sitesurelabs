@@ -1,4 +1,6 @@
 import { Seo } from '@/components/ui/Seo'
+import { pageSeo } from '@/data/seo'
+import { breadcrumbSchema } from '@/lib/schema'
 import { PageHero } from '@/components/ui/PageHero'
 import { ServiceCard } from '@/components/ui/ServiceCard'
 import { CtaBand } from '@/components/ui/CtaBand'
@@ -9,11 +11,7 @@ import { services } from '@/data/services'
 export default function Services() {
   return (
     <>
-      <Seo
-        title="AI & Engineering Services"
-        description="SiteSureLabs is a technology partner for custom AI: computer vision, document processing and OCR, LLM applications and RAG, AI agents, custom software and AI infrastructure."
-        path="/services"
-      />
+      <Seo {...pageSeo('/services')} jsonLd={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Services', path: '/services' }])} />
       <PageHero
         eyebrow="AI & engineering services"
         lines={['Your technology', 'partner for', '*custom AI.*']}

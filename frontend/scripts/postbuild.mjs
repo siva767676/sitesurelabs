@@ -1,65 +1,85 @@
-// Post-build: per-route static HTML (title, description, canonical, Open Graph), sitemap.xml and 404.html.
-// A client-rendered SPA otherwise serves identical <head> metadata for every URL.
-// Node >= 22.18 strips TypeScript types natively, so the data modules are imported directly.
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
+// Post-build: prerender every public route to static HTML, then write sitemap.xml and 404.html.
+//
+// `vite build` produces dist/ (the browser app) and `vite build --ssr` produces dist-server/entry-server.js, which
+// renders the real React app for a URL. Here each route is rendered with that bundle, so the HTML a crawler (or a
+// visitor with JavaScript off) receives already holds the page's headings, copy, links, structured data and head tags.
+// The browser then hydrates the same markup (src/main.tsx). Every visitor and bot gets identical HTML: no cloaking.
+//
+// Titles, descriptions and canonical URLs are no longer copied by hand here: they come from src/data/seo.ts via the
+// <Seo> component, so the prerendered HTML and the live DOM cannot drift apart.
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { join, dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { products } from '../src/data/products.ts'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const dist = join(root, 'dist')
-const SITE = 'https://sitesurelabs.com'
+// SEO_DIST / SEO_SERVER_DIST let a debug build (unminified React, readable hydration errors) run through the same step.
+const dist = join(root, process.env.SEO_DIST ?? 'dist')
+const serverEntry = join(root, process.env.SEO_SERVER_DIST ?? 'dist-server', 'entry-server.js')
+if (!existsSync(serverEntry)) throw new Error('postbuild: dist-server/entry-server.js is missing. Run `npm run build`, which builds it first.')
+
+const { render, allPages, site, articles } = await import(pathToFileURL(serverEntry).href)
 const template = readFileSync(join(dist, 'index.html'), 'utf8')
 
 // index.html carries a small inline script that applies the saved light/dark theme before first paint.
-// The production Content-Security-Policy (nginx.conf) only runs it if its SHA-256 is allow-listed, so a
+// The production Content-Security-Policy (nginx-security-headers.conf) only runs it if its SHA-256 is allow-listed, so a
 // script edit that is not mirrored there would silently flash the wrong theme. Fail the build instead.
-const nginxCsp = readFileSync(join(root, 'nginx.conf'), 'utf8').split('\n').filter((l) => l.includes('Content-Security-Policy'))
+const cspLines = readFileSync(join(root, 'nginx-security-headers.conf'), 'utf8').split('\n').filter((l) => l.includes('Content-Security-Policy'))
 for (const [, code] of template.matchAll(/<script>([\s\S]*?)<\/script>/g)) {
   const hash = `'sha256-${createHash('sha256').update(code).digest('base64')}'`
-  if (!nginxCsp.length || !nginxCsp.every((l) => l.includes(hash))) {
-    throw new Error(`postbuild: the inline <script> in index.html is not allowed by every Content-Security-Policy line in nginx.conf.\n  Add ${hash} to script-src there.`)
+  if (!cspLines.length || !cspLines.every((l) => l.includes(hash))) {
+    throw new Error(`postbuild: the inline <script> in index.html is not allowed by the Content-Security-Policy in nginx-security-headers.conf.\n  Add ${hash} to script-src there.`)
   }
 }
 
-const pages = [
-  { path: '/', title: 'SiteSureLabs | AI Products & Enterprise Engineering', description: 'SiteSureLabs builds AI-powered products and intelligent systems for enterprises: computer vision, document intelligence, LLM applications and workflow automation.', index: true, priority: '1.0' },
-  { path: '/products', title: 'Products for Construction | SiteSureLabs', description: 'Anviksha, SiteVision, Digi Reco and Parichay: products from SiteSureLabs for construction quality inspection, 360° site capture, steel reconciliation and worker entry passes.', index: true, priority: '0.9' },
-  { path: '/services', title: 'AI & Engineering Services | SiteSureLabs', description: 'SiteSureLabs is a technology partner for custom AI: computer vision, document processing and OCR, LLM applications and RAG, AI agents, custom software and AI infrastructure.', index: true, priority: '0.9' },
-  { path: '/about', title: 'About | SiteSureLabs', description: 'SiteSureLabs is an AI product company building practical, product-first AI for enterprises.', index: true, priority: '0.6' },
-  { path: '/contact', title: 'Contact & Request a Demo | SiteSureLabs', description: 'Request a demo of Anviksha, SiteVision, Digi Reco or Parichay, or discuss a custom AI project with SiteSureLabs.', index: true, priority: '0.8' },
-  { path: '/privacy', title: 'Privacy Policy | SiteSureLabs', description: 'How SiteSureLabs collects and handles personal information submitted through this website.', index: true, priority: '0.3' },
-  { path: '/terms', title: 'Terms of Use | SiteSureLabs', description: 'Terms governing use of the SiteSureLabs website.', index: true, priority: '0.3' },
-  ...products.map((p) => ({ path: `/products/${p.slug}`, title: `${p.seo.title} | SiteSureLabs`, description: p.seo.description, index: p.verified, priority: '0.8' })),
-]
+// Preload the Latin variable fonts that paint the headline and body copy. Without this the browser only learns of them
+// after the stylesheet downloads, which delays the largest text paint (LCP). Hashed names are looked up from the build.
+const fontPreloads = ['space-grotesk-latin-wght-normal', 'inter-latin-wght-normal']
+  .map((stem) => readdirSync(join(dist, 'assets')).find((f) => f.startsWith(`${stem}-`) && f.endsWith('.woff2')))
+  .filter(Boolean)
+  .map((f) => `<link rel="preload" href="/assets/${f}" as="font" type="font/woff2" crossorigin>`)
+  .join('')
+if (fontPreloads.split('<link').length - 1 !== 2) throw new Error('postbuild: expected two font files to preload (check the @fontsource imports in src/main.tsx).')
 
-const esc = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
+const HEAD_MARKER = /<!--seo-head:[\s\S]*?-->/
+const ROOT_DIV = '<div id="root"></div>'
+if (!HEAD_MARKER.test(template) || !template.includes(ROOT_DIV)) throw new Error('postbuild: index.html lost its <!--seo-head--> marker or empty #root.')
 
-function render(p) {
-  const url = SITE + (p.path === '/' ? '' : p.path)
-  let html = template
-    .replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(p.title)}</title>`)
-    .replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${esc(p.description)}" />`)
-    .replace(/<link rel="canonical"[^>]*>/, `<link rel="canonical" href="${url}" />`)
-    .replace(/<meta property="og:title"[^>]*>/, `<meta property="og:title" content="${esc(p.title)}" />`)
-    .replace(/<meta property="og:description"[^>]*>/, `<meta property="og:description" content="${esc(p.description)}" />`)
-    .replace(/<meta property="og:url"[^>]*>/, `<meta property="og:url" content="${url}" />`)
-  if (!p.index) html = html.replace('</head>', '  <meta name="robots" content="noindex, nofollow" />\n  </head>')
-  return html
+// React 19 hoists <title>, <meta> and <link> rendered by <Seo> and emits them first. Move them into <head>.
+const HOISTED = /^((?:<title>[\s\S]*?<\/title>|<(?:meta|link)\b[^>]*\/>)+)/
+
+async function prerenderRoute(url) {
+  const out = await render(url)
+  const m = out.match(HOISTED)
+  if (!m) throw new Error(`postbuild: ${url} rendered no <title>/<meta> head tags. Does the page render <Seo>?`)
+  return template.replace(HEAD_MARKER, () => m[1] + fontPreloads).replace(ROOT_DIV, () => `<div id="root">${out.slice(m[1].length)}</div>`)
 }
 
+// Articles stay 'pending' until the product team has approved them in writing (see src/data/articles.ts).
+const unreviewed = articles.filter((a) => a.review !== 'approved').map((a) => a.slug)
+if (unreviewed.length) {
+  const msg = `postbuild: ${unreviewed.length} article(s) not yet approved by the product team: ${unreviewed.join(', ')}`
+  if (process.env.SEO_REQUIRE_REVIEWED === '1') throw new Error(`${msg}
+  SEO_REQUIRE_REVIEWED=1 is set, so the build is refused. Get sign-off, then set review: 'approved'.`)
+  console.warn(`WARNING ${msg}`)
+}
+
+const pages = allPages()
 for (const p of pages) {
   const dir = p.path === '/' ? dist : join(dist, p.path)
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
-  writeFileSync(join(dir, 'index.html'), render(p))
+  writeFileSync(join(dir, 'index.html'), await prerenderRoute(p.path))
 }
 
-// 404.html: served with a real 404 status by the web server; the SPA boots and renders its NotFound page.
-writeFileSync(join(dist, '404.html'), render({ path: '/404', title: 'Page not found | SiteSureLabs', description: 'The page you are looking for does not exist.', index: false }))
+// 404.html: served with a real 404 status by the web server (nginx error_page). It is the NotFound page, prerendered,
+// noindex and without a canonical.
+writeFileSync(join(dist, '404.html'), await prerenderRoute('/page-not-found'))
 
-const today = new Date().toISOString().slice(0, 10)
-const urls = pages.filter((p) => p.index).map((p) => `  <url><loc>${SITE}${p.path === '/' ? '/' : p.path}</loc><lastmod>${today}</lastmod><priority>${p.priority}</priority></url>`)
+// sitemap.xml: canonical, indexable URLs only. <lastmod> appears only where src/data/seo.ts records a real
+// content-change date; a build date would be wrong for every page that did not change. Google ignores <priority>.
+const urls = pages
+  .filter((p) => p.index)
+  .map((p) => `  <url><loc>${site.url}${p.path}</loc>${p.modified ? `<lastmod>${p.modified}</lastmod>` : ''}</url>`)
 writeFileSync(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`)
 
-console.log(`postbuild: ${pages.length} route pages, ${urls.length} sitemap URLs, 404.html`)
+console.log(`postbuild: ${pages.length} prerendered routes, ${urls.length} sitemap URLs, 404.html`)

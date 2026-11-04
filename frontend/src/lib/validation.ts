@@ -7,6 +7,9 @@ export const FREE_EMAIL_DOMAINS = [
   'aol.com', 'icloud.com', 'me.com', 'proton.me', 'protonmail.com', 'gmx.com', 'mail.com', 'rediffmail.com', 'zoho.com', 'yandex.com',
 ]
 
+/** The enquiry API accepts the interest value 'sitevision' (backend schema). Product page slugs can differ from it. */
+export const interestForProduct = (slug: string | null) => (slug === 'site-vision' ? 'sitevision' : slug)
+
 export const interests = [
   { value: 'anviksha', label: 'Anviksha: AI construction inspection' },
   { value: 'sitevision', label: 'SiteVision: 360° site capture' },

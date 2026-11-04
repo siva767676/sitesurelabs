@@ -1,4 +1,6 @@
 import { Seo } from '@/components/ui/Seo'
+import { pageSeo } from '@/data/seo'
+import { breadcrumbSchema } from '@/lib/schema'
 import { PageHero } from '@/components/ui/PageHero'
 import { ContactForm } from '@/components/forms/ContactForm'
 import { ContactVisual } from '@/components/ui/PageVisuals'
@@ -13,7 +15,7 @@ const steps = [
 export default function Contact() {
   return (
     <>
-      <Seo title="Contact & Request a Demo" description="Request a demo of Anviksha, SiteVision, Digi Reco or Parichay, or discuss a custom AI project with SiteSureLabs." path="/contact" />
+      <Seo {...pageSeo('/contact')} jsonLd={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Contact', path: '/contact' }])} />
       <PageHero eyebrow="Contact" lines={['Start a', 'conversation.']} lead="Request a product demonstration or tell us about a project. We read every enquiry and reply personally." visual={<ContactVisual />} />
       <section className="pb-[var(--section-y)]" aria-label="Enquiry form">
         <div className="container-x">

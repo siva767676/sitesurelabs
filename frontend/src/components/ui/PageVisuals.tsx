@@ -18,7 +18,7 @@ import { ease } from '@/design/tokens'
 
 const STACK = [
   { slug: 'digi-reco', box: 'left-[30%] top-0 w-[68%]', from: { x: 40, y: -20 }, delay: 0.25, float: '1.5s' },
-  { slug: 'sitevision', box: 'left-0 top-[27%] w-[64%]', from: { x: -40, y: 10 }, delay: 0.4, float: '0s' },
+  { slug: 'site-vision', box: 'left-0 top-[27%] w-[64%]', from: { x: -40, y: 10 }, delay: 0.4, float: '0s' },
   { slug: 'anviksha', box: 'left-[34%] top-[54%] w-[64%]', from: { x: 30, y: 40 }, delay: 0.55, float: '3s' },
 ] as const
 

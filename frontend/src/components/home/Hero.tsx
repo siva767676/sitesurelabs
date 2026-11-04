@@ -92,7 +92,7 @@ export function Hero() {
               by="char"
               immediate
               delay={0.15}
-              lines={['Intelligence', 'engineered for', 'the *real world.*']}
+              lines={['AI-powered', 'construction technology', 'for the *real world.*']}
               className="t-display"
             />
 
@@ -104,7 +104,7 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease: ease.out, delay: 0.55 }}
             >
-              We build AI-powered products and intelligent systems that help businesses see more clearly, work smarter, and turn complex problems into actionable outcomes.
+              SiteSureLabs builds AI products for real estate developers, construction companies and project teams: inspection, quality management, site monitoring and digital project visibility, plus custom enterprise AI.
             </motion.p>
 
             <motion.div
@@ -114,6 +114,7 @@ export function Hero() {
               transition={{ duration: 0.9, ease: ease.out, delay: 0.7 }}
             >
               <Button to="/products" variant="primary" arrow magnetic className="w-full sm:w-auto">Explore Our Products</Button>
+              <Button to="/contact?type=demo" variant="secondary" className="w-full sm:w-auto">Request a Demo</Button>
             </motion.div>
           </div>
         </div>

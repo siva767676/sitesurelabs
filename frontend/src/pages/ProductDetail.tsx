@@ -13,7 +13,7 @@ import { SwipeList } from '@/components/ui/SwipeList'
 import { VideoDialog } from '@/components/ui/VideoDialog'
 import { CtaBand } from '@/components/ui/CtaBand'
 import { getProduct, products } from '@/data/products'
-import { site } from '@/data/site'
+import { productSchema } from '@/lib/schema'
 import { ease } from '@/design/tokens'
 import { accentVars } from '@/lib/accent'
 import { stillSet } from '@/lib/images'
@@ -37,12 +37,8 @@ export default function ProductDetail() {
         title={p.seo.title}
         description={p.seo.description}
         path={`/products/${p.slug}`}
-        noindex={!p.verified}
-        jsonLd={planned ? undefined : {
-          '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: p.name, description: p.summary,
-          applicationCategory: 'BusinessApplication', url: `${site.url}/products/${p.slug}`,
-          publisher: { '@type': 'Organization', name: site.name, url: site.url },
-        }}
+        index={p.verified}
+        jsonLd={planned ? undefined : productSchema(p)}
       />
 
       {/* hero */}
@@ -54,8 +50,11 @@ export default function ProductDetail() {
           </nav>
           <div className="grid-12 items-center gap-y-12">
             <div className="col-span-12 lg:col-span-6">
-              <p className="t-label accent-scope mb-6 text-[var(--accent-ink)]" style={accentVars(p.accent)}>{p.category}</p>
-              <TextReveal as="h1" by="char" immediate lines={[p.name]} className="t-display !text-[clamp(3.25rem,1rem+9vw,9.5rem)]" />
+              {/* One H1 that says what the product is: "<descriptor> <name>". The name keeps its large animated treatment. */}
+              <h1 aria-label={`${p.name}: ${p.descriptor}`}>
+                <span aria-hidden="true" className="t-label accent-scope mb-6 block text-[var(--accent-ink)]" style={accentVars(p.accent)}>{p.descriptor}</span>{' '}
+                <TextReveal as="span" decorative by="char" immediate lines={[p.name]} className="t-display block !text-[clamp(3.25rem,1rem+9vw,9.5rem)]" />
+              </h1>
               <motion.p className="mt-7 font-display text-[clamp(1.5rem,1.1rem+1.6vw,2.6rem)] font-medium leading-[1.1] tracking-tight" initial={reduced ? false : { opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.9, ease: ease.out }}>{p.tagline}</motion.p>
               <motion.p className="t-lead mt-6" initial={reduced ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7, duration: 0.9 }}>{p.summary}</motion.p>
               <motion.div className="mt-8 grid gap-3 sm:mt-9 sm:flex sm:flex-wrap" initial={reduced ? false : { opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.85, duration: 0.9, ease: ease.out }}>
@@ -105,12 +104,12 @@ export default function ProductDetail() {
           <div className="grid-12 gap-y-14">
             <Reveal className="col-span-12 lg:col-span-5">
               <p className="t-label mb-6">The problem</p>
-              <p className="t-h2 text-[var(--c-muted)]">{p.problem.title}</p>
+              <h3 className="t-h2 text-[var(--c-muted)]">{p.problem.title}</h3>
               <p className="t-body mt-6">{p.problem.body}</p>
             </Reveal>
             <Reveal delay={0.12} className="col-span-12 lg:col-span-6 lg:col-start-7">
               <p className="t-label mb-6 text-[var(--c-accent)]">The solution</p>
-              <p className="t-h2">{p.solution.title}</p>
+              <h3 className="t-h2">{p.solution.title}</h3>
               <p className="t-body mt-6">{p.solution.body}</p>
             </Reveal>
           </div>

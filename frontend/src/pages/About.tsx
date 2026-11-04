@@ -1,4 +1,6 @@
 import { Seo } from '@/components/ui/Seo'
+import { pageSeo } from '@/data/seo'
+import { breadcrumbSchema } from '@/lib/schema'
 import { PageHero } from '@/components/ui/PageHero'
 import { Reveal } from '@/components/ui/Reveal'
 import { CtaBand } from '@/components/ui/CtaBand'
@@ -10,7 +12,7 @@ import { Link } from 'react-router-dom'
 export default function About() {
   return (
     <>
-      <Seo title="About" description="SiteSureLabs is an AI product company building practical, product-first AI for enterprises." path="/about" />
+      <Seo {...pageSeo('/about')} jsonLd={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'About', path: '/about' }])} />
       <PageHero
         eyebrow="About SiteSureLabs"
         lines={['Practical AI,', 'built as *product.*']}
@@ -80,8 +82,10 @@ export default function About() {
               <p className="t-label mt-4 text-[var(--color-accent)]">Founder & CEO, SiteSureLabs</p>
             </div>
             <Reveal className="col-span-12 lg:col-span-7 lg:col-start-6 lg:pt-[3.75rem]">
-              <p className="t-lead !max-w-none !text-[var(--c-fg)]">Founded in 2025 by Amod Jupally, SiteSureLabs is driven by a vision to bridge the gap between artificial intelligence and real-world industry challenges.</p>
-              <p className="t-body mt-6 max-w-[62ch]">As a member of the Promoter Group at My Home Constructions and Maha Cement, he brings a strategic perspective on the intersection of business, industrial innovation, and emerging technologies. At SiteSureLabs, he leads the development of intelligent solutions designed to help businesses improve quality, enhance operational efficiency, and embrace technological advancement.</p>
+              {/* CONFIRM with the founder before adding more: founding year, prior roles, affiliations and credentials were removed
+                  because they were not sourced. Add them back only with the founder's written sign-off. */}
+              <p className="t-lead !max-w-none !text-[var(--c-fg)]">SiteSureLabs is led by its founder, Amod Jupally, and is driven by a vision to bridge the gap between artificial intelligence and real-world industry challenges.</p>
+              <p className="t-body mt-6 max-w-[62ch]">At SiteSureLabs he leads the development of intelligent solutions designed to help businesses improve quality, enhance operational efficiency, and embrace technological advancement.</p>
             </Reveal>
             <div className="col-span-12 border-t border-[var(--c-line)] pt-8">
               <h3 className="t-label mb-5">Focus Areas</h3>

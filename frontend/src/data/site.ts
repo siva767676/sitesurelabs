@@ -1,3 +1,4 @@
+import { publishedArticles } from './articles'
 /** Company-level content. Anything marked CONFIRM must be verified by the business before launch. */
 
 export const site = {
@@ -5,7 +6,7 @@ export const site = {
   url: 'https://sitesurelabs.com',
   tagline: 'Intelligence engineered for the real world.',
   description:
-    'SiteSureLabs builds AI-powered products and intelligent systems for enterprises: computer vision, document intelligence, LLM applications and workflow automation.',
+    'SiteSureLabs builds AI-powered construction technology and enterprise software that improve construction inspection, project visibility, operational efficiency and digital transformation.',
   // CONFIRM: real contact mailbox. Placeholder until the domain mailbox exists.
   email: 'hello@sitesurelabs.com',
   // CONFIRM: registered address / city. Intentionally omitted until provided.
@@ -19,8 +20,10 @@ export const nav = [
   { label: 'Products', to: '/products' },
   { label: 'Services', to: '/services' },
   { label: 'About', to: '/about' },
+  // The Blog link appears only once an article has been approved (review: 'approved' in data/articles.ts).
+  ...(publishedArticles().length > 0 ? [{ label: 'Blog', to: '/blog' }] : []),
   { label: 'Contact', to: '/contact' },
-] as const
+] as { label: string; to: string }[]
 
 export const legalNav = [
   { label: 'Privacy Policy', to: '/privacy' },

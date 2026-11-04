@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, Info } from 'lucide-react'
 import { Seo } from '@/components/ui/Seo'
+import { pageSeo } from '@/data/seo'
+import { breadcrumbSchema } from '@/lib/schema'
 import { site } from '@/data/site'
 
 type Doc = 'privacy' | 'terms'
@@ -62,7 +64,7 @@ export default function Legal({ doc }: { doc: Doc }) {
 
   return (
     <>
-      <Seo title={d.title} description={d.intro} path={`/${doc}`} />
+      <Seo {...pageSeo(`/${doc}`)} jsonLd={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: d.title, path: `/${doc}` }])} />
       <article className="pb-[var(--section-y)] pt-[calc(var(--header-h)+clamp(48px,8vw,112px))]">
         <div className="container-x">
           <div className="grid-12 gap-y-12">

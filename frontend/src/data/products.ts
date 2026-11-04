@@ -22,6 +22,8 @@ export interface Product {
   verified: boolean
   index: string
   category: string
+  /** What the product is, in plain words. It is the first part of the page's H1 (search engines and readers see it with the name). */
+  descriptor: string
   tagline: string
   /** One sentence: what it does. Shown on the home ecosystem and the details sheet. */
   blurb: string
@@ -44,6 +46,8 @@ export interface Product {
     coverAlt: string
     shots: Shot[]
     demoVideo?: string
+    /** YYYY-MM-DD the demo video was first added to the site (git history). Used for VideoObject structured data. */
+    demoVideoAdded?: string
     /** CSS object-position used when cropping the cover. */
     focus?: string
     /** indices into `shots`: [primary, secondary] shown on the home ecosystem stage */
@@ -51,6 +55,8 @@ export interface Product {
   }
   faq: { q: string; a: string }[]
   seo: { title: string; description: string }
+  /** Usage figures. Leave unset unless the business has verified the number and its source: product pages and the home
+   *  page show these as facts. Figures from demonstrations must be labelled as demo data. (Removed pending verification.) */
   metrics?: { label: string; value: string }[]
 }
 
@@ -64,6 +70,7 @@ export const products: Product[] = [
     verified: true,
     index: '01',
     category: 'AI construction inspection',
+    descriptor: 'AI construction quality inspection software',
     tagline: 'See every defect. Fix it faster.',
     blurb: 'Turn site photos into located, rated defect observations and quality reports.',
     summary: 'AI-powered construction quality inspection. Capture a defect, locate it, and get a rated observation and report.',
@@ -104,6 +111,7 @@ export const products: Product[] = [
       focus: '50% 40%',
       showcase: [0, 3],
       demoVideo: '/media/anviksha-demo.mp4',
+      demoVideoAdded: '2026-10-24',
       shots: [
         { src: still('anviksha-defects'), alt: 'Defects detected and labelled on concrete photographs', caption: 'Defects located and labelled' },
         { src: still('anviksha-collection'), alt: 'Anviksha inspection screen showing a location details form', caption: 'Location and category on every capture' },
@@ -123,19 +131,15 @@ export const products: Product[] = [
       title: 'Anviksha: AI Construction Quality Inspection',
       description: 'Anviksha by SiteSureLabs turns site photos into located, rated and explained defect observations, with AI image analysis and quality observation reports.',
     },
-    metrics: [
-      { label: 'Images processed', value: '10,000+' },
-      { label: 'Live users', value: '150+' },
-      { label: 'Steps, capture to report', value: '4' },
-    ],
   },
   {
-    slug: 'sitevision',
+    slug: 'site-vision',
     name: 'SiteVision',
     status: 'demonstrated',
     verified: true,
     index: '02',
     category: 'Visual intelligence · 360° site capture',
+    descriptor: '360° construction site documentation and progress tracking',
     tagline: 'Capture once. Walk it from anywhere.',
     blurb: 'Capture rooms in 360° against the floor plan, then review progress remotely with AI.',
     summary: 'Construction progress visibility in 360°. Capture against the floor plan, publish walkthroughs, and track progress with AI.',
@@ -175,6 +179,7 @@ export const products: Product[] = [
       focus: '50% 45%',
       showcase: [3, 4],
       demoVideo: '/media/sitevision-demo.mp4',
+      demoVideoAdded: '2026-10-24',
       shots: [
         { src: still('sitevision-floorplan'), alt: 'Floor plan with labelled capture points', caption: 'The floor plan becomes the map' },
         { src: still('sitevision-capture'), alt: 'SiteVision New Capture screen to select a project', caption: 'Field capture, project by project' },
@@ -190,14 +195,9 @@ export const products: Product[] = [
       { q: 'Who uses it?', a: 'Field engineers capture, managers review, admins set up projects and leadership asks Drishti.' },
     ],
     seo: {
-      title: 'SiteVision: 360° Construction Site Capture and AI Progress',
+      title: 'SiteVision: 360° Construction Site Capture',
       description: 'SiteVision by SiteSureLabs captures construction sites in 360° against the floor plan, publishes walkable tours and tracks progress with AI and the Drishti assistant.',
     },
-    metrics: [
-      { label: 'Projects', value: '3' },
-      { label: 'Towers', value: '23' },
-      { label: 'Capture processes for AI progress', value: '1,238' },
-    ],
   },
   {
     slug: 'digi-reco',
@@ -206,6 +206,7 @@ export const products: Product[] = [
     verified: true,
     index: '03',
     category: 'Intelligent document & data reconciliation',
+    descriptor: 'Construction steel reconciliation software',
     tagline: 'Steel loss, made visible.',
     blurb: 'Turn monthly site workbooks into a reconciled steel abstract, with wastage and exceptions flagged.',
     summary: 'Steel reconciliation for construction. Monthly workbooks become ledgers and an abstract by diameter, with checks and exceptions.',
@@ -245,6 +246,7 @@ export const products: Product[] = [
       focus: '50% 20%',
       showcase: [0, 4],
       demoVideo: '/media/digireco-demo.mp4',
+      demoVideoAdded: '2026-10-24',
       shots: [
         { src: still('digireco-abstract'), alt: 'Monthly steel abstract with cross-check warnings', caption: 'Monthly steel abstract' },
         { src: still('digireco-bulk'), alt: 'Bulk import preview showing rows ready to commit', caption: 'Bulk import, reviewed before commit' },
@@ -263,11 +265,6 @@ export const products: Product[] = [
       title: 'Digi Reco: Steel Reconciliation for Construction',
       description: 'Digi Reco by SiteSureLabs turns monthly site workbooks into ledgers and a steel abstract by diameter, with cross-checks, exceptions and a portfolio wastage dashboard.',
     },
-    metrics: [
-      { label: 'Steel records processed', value: '80,800' },
-      { label: 'Steel wastage tracked', value: '2.5%' },
-      { label: 'Digital record traceability', value: '100%' },
-    ],
   },
   {
     slug: 'parichay',
@@ -276,6 +273,7 @@ export const products: Product[] = [
     verified: true,
     index: '04',
     category: 'Worker registration & entry passes',
+    descriptor: 'Construction worker registration and entry passes',
     tagline: 'Know who’s on site.',
     blurb: 'Register every worker at the gate and print their entry pass, with duplicates flagged before a second card is issued.',
     summary: 'Worker registration and entry passes for construction sites. Operators register at the gate, passes print in batches and administrators see every site on one dashboard.',
@@ -316,6 +314,7 @@ export const products: Product[] = [
       focus: '50% 50%',
       showcase: [3, 5],
       demoVideo: '/media/parichay-demo.mp4',
+      demoVideoAdded: '2026-10-24',
       shots: [
         { src: still('parichay-register'), alt: 'Parichay registration form with personal details and the batch queue of passes beside it', caption: 'Three-step registration' },
         { src: still('parichay-photo'), alt: 'Parichay photo capture step, with the worker’s photo taken at the gate', caption: 'Photo taken at the gate' },
@@ -331,14 +330,9 @@ export const products: Product[] = [
       { q: 'What does the pass carry?', a: 'The worker’s photo, contractor, labour-camp badge, a site watermark and the supervisor’s contact.' },
     ],
     seo: {
-      title: 'Parichay: Worker Registration and Entry Passes for Construction Sites',
+      title: 'Parichay: Construction Worker Entry Passes',
       description: 'Parichay by SiteSureLabs registers workers at the site gate, flags duplicates across sites, prints entry passes in batches and gives administrators a dashboard of every site.',
     },
-    metrics: [
-      { label: 'Sites', value: '10' },
-      { label: 'Cards generated', value: '23,538' },
-      { label: 'Card for each worker', value: '1' },
-    ],
   },
   {
     slug: 'progress-tracker',
@@ -347,6 +341,7 @@ export const products: Product[] = [
     verified: false,
     index: '05',
     category: 'Milestone monitoring · In development',
+    descriptor: 'Construction milestone monitoring (in development)',
     tagline: 'Milestones, visible before they slip.',
     // CONFIRM: Progress Tracker has no source material yet. Scope, capabilities and visuals await business confirmation.
     blurb: 'Milestone monitoring, progress visibility and automated alerts. Details to be confirmed.',
