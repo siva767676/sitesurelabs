@@ -1,0 +1,36 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Logs",
+      "Effect": "Allow",
+      "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+      "Resource": "arn:aws:logs:ap-south-1:196338354246:log-group:/aws/codebuild/sitesurelabs-image-build*"
+    },
+    {
+      "Sid": "ReadBuildSource",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:GetObjectVersion"],
+      "Resource": "arn:aws:s3:::sitesurelabs-build-src-196338354246/*"
+    },
+    {
+      "Sid": "BucketInfo",
+      "Effect": "Allow",
+      "Action": ["s3:GetBucketLocation", "s3:ListBucket"],
+      "Resource": "arn:aws:s3:::sitesurelabs-build-src-196338354246"
+    },
+    { "Sid": "EcrLogin", "Effect": "Allow", "Action": "ecr:GetAuthorizationToken", "Resource": "*" },
+    {
+      "Sid": "PushOnlyTheSiteSureLabsRepos",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:BatchCheckLayerAvailability", "ecr:InitiateLayerUpload", "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload", "ecr:PutImage", "ecr:BatchGetImage", "ecr:GetDownloadUrlForLayer", "ecr:DescribeImages"
+      ],
+      "Resource": [
+        "arn:aws:ecr:ap-south-1:196338354246:repository/sitesurelabs-frontend",
+        "arn:aws:ecr:ap-south-1:196338354246:repository/sitesurelabs-backend"
+      ]
+    }
+  ]
+}

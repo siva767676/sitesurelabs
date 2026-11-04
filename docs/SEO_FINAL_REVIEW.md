@@ -4,6 +4,12 @@ Reviewed 2026-11-04 on branch `feature/sitesurelabs-seo-implementation`. **Nothi
 
 > **How to read status in these SEO documents.** **Implemented in code** = on the feature branch, uncommitted, not deployed and not live. **Owner action** = needs you or a named team. **External activity** = done outside the repo; none of it has been done. This file is the authoritative status record; the other seven SEO documents and `SEO_PRODUCT_CONTENT_REVIEW.md` and `SEO_PRODUCTION_READINESS.md` support it.
 
+## Update 2026-11-04 (deployment phase)
+
+After this review the owner **approved the three articles** and asked for the remaining work and the deployment. Changes since the review below: articles approved and public in the build; branch merged with the newer `origin/main` (commit `67f2fdd`, keeping the team's contact-page fixes, the founder-supplied bio and the `support@` email); new `og-image.png`; 720p demo videos; certificate for `www` verified; sitemap now **13 URLs**; **28 SEO tests** pass; Docker images use the strict build. **Not done: the ECR image build and the production deployment**, which wait on one approval. Current status, the production architecture found and the deployment and rollback plan are in `SEO_PRODUCTION_READINESS.md` (the update at the top, sections 13 and 14). The figures in sections 1 to 8 below describe the state at review time.
+
+Workstream changes since the table below: **7 and 10** (content, AEO): articles approved, public in the build, product-team confirmation of four statements still open. **9** (images and video): new og-image and 720p videos done; AVIF, manifest and icons not done. **4** (technical): merged with main, certificate verified; HSTS, www redirect, nginx run and matrix still pending.
+
 ## 1. Overall assessment
 
 **The engineering work is complete and verified to the extent possible without Docker, a phone or the live site. The site is not ready to deploy, because of approvals and unverified infrastructure, not code defects.**

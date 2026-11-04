@@ -109,7 +109,7 @@ These need server access, accounts or tools that are not part of this repository
 
 - [ ] **HSTS** on the Ubuntu host nginx (section 1).
 - [ ] **www to apex**: one 301 from `https://www.sitesurelabs.com` and `http://www.sitesurelabs.com` to `https://sitesurelabs.com`.
-- [ ] **Certificate** covers both `sitesurelabs.com` and `www.sitesurelabs.com` (`openssl s_client -connect www.sitesurelabs.com:443 -servername www.sitesurelabs.com </dev/null | openssl x509 -noout -ext subjectAltName`).
+- [x] **Certificate** covers both `sitesurelabs.com` and `www.sitesurelabs.com`: **verified 2026-11-04** (SAN lists both; valid to 27 Jan 2027). Still to do on the host: HSTS and the www redirect (owner).
 - [ ] **nginx validation and the full status/redirect matrix** (sections 2 and 6) when Docker is available.
 - [ ] **Real mobile browser test** on an iPhone and an Android phone: home hero, a product page, the blog, an article, the contact form.
 - [ ] Search Console and Bing Webmaster ownership, sitemap submission (`SEO_ANALYTICS_SETUP.md`).

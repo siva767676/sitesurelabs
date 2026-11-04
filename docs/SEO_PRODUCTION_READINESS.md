@@ -1,8 +1,33 @@
 # SiteSureLabs: SEO Production Readiness Checklist
 
-Status: **NOT READY to deploy.** The code is complete and tested on the branch, but items below are unverified or need you. Prepared 2026-11-04 on `feature/sitesurelabs-seo-implementation`. **Nothing has been committed, merged, deployed or changed on the live server.**
+Status: **NOT DEPLOYED.** The code is complete, merged with the latest `origin/main` and tested; the image build and deployment are waiting on one decision (see the update below). Prepared 2026-11-04 on `feature/sitesurelabs-seo-implementation`. **Nothing has been deployed and nothing on the live server was changed.**
 
 > **How to read status in these SEO documents.** **Implemented in code** = on the feature branch, uncommitted, not deployed and not live. **Owner action** = needs you or a named team. **External activity** = done outside the repo; none of it has been done. Authoritative workstream status: `SEO_FINAL_REVIEW.md`.
+
+## Update 2026-11-04, deployment phase (read this first)
+
+The owner approved the three articles and asked for the remaining work, image build and deployment. **Where things stand:**
+
+| Item | Status now |
+|---|---|
+| Articles | **Approved by the owner**; `review: 'approved'`. They are public in the build (indexable, in sitemap, nav, blog list, `llms.txt`). The Anviksha and SiteVision teams still need to confirm the four flagged statements |
+| Merge with `origin/main` | **Done** (commit `67f2fdd`). Production runs newer code than this branch had (contact-page fixes, founder bio from the founder, `support@` email, `c-[hash].js` chunk names that content blockers do not drop, route-load retry, error-boundary reset, Turnstile guard). All of it is kept. Deploying the branch without merging first would have reverted those fixes |
+| Sitemap | 13 URLs (home, products, services, about, contact, four products, blog, three articles). `/privacy`, `/terms`, `/products/progress-tracker` and `404.html` stay out |
+| SEO tests | **28 of 28 pass**; strict build (`SEO_REQUIRE_REVIEWED=1`) passes; Docker image build uses the strict build |
+| New `og-image.png` | **Done**: matches the approved positioning, 1200x630, 90 KB |
+| Demo videos | **Done**: 720p copies (44 to 55% smaller, 26 MB against 47 MB) used on phones and data-saver; originals kept; fallback to the original if a 720p file fails |
+| SSL certificate for `www` | **Verified**: the certificate covers both `sitesurelabs.com` and `www.sitesurelabs.com` (valid to 27 Jan 2027) |
+| Backend | Identical to what production runs (no diff against `82f0847`), so the API container does not need replacing |
+| Docker image build, `nginx -t`, status matrix | **Not yet run.** No Docker is available on the development machine. A build definition that does all three is prepared (see section 14) but needs permission to create a build role (below) |
+| ECR images | **Not pushed.** Empty repositories `sitesurelabs-frontend` and `sitesurelabs-backend` and a private bucket `sitesurelabs-build-src-196338354246` were created (all new, nothing shared with other products) |
+| Deployment to production | **Not done.** Waiting on the decision below |
+| HSTS and www to apex redirect on the host nginx | Owner action (the owner said they will do these after the deploy). Not touched |
+| Privacy and Terms | Still `noindex` and out of the sitemap, pending legal review |
+| Real phone testing | Owner action |
+| Rich Results Test, Schema.org Validator | After deploy |
+| Stage 4 analytics | Not started: needs the GA4 ID and the consent decision |
+
+**What is blocking the image build.** There is no Docker on the development machine and the production host is small (2 GB RAM, 1.9 GB free disk), so the images need a proper build environment. The safe way is a short-lived AWS CodeBuild project with its own role limited to the two new repositories and the private bucket. **Creating that role was blocked by the permission check, correctly, because it grants new access in the AWS account. It needs the owner's explicit go-ahead.** Alternatives are in section 14.
 
 Legend: `[x]` verified now, `[ ]` not done, **[OWNER]** needs you, **[SERVER]** needs access to the host server, **[DOCKER]** needs Docker running, **[DEPLOYED]** only possible after deployment.
 
@@ -205,3 +230,40 @@ Stage 4 does not begin until you provide the GA4 Measurement ID and the consent 
 ## 12. Rollback
 
 Front end and nginx only; no database or API change. Redeploy the previous image. After a rollback `/products/site-vision` returns 404 until the new build returns, because the old build serves `/products/sitevision`. The new `/blog` URLs also disappear.
+
+## 13. How production runs (discovered 2026-11-04, read-only)
+
+| Item | Finding |
+|---|---|
+| Host | EC2 `i-0a0585c546363305e`, name `SiteSureLabs`, Ubuntu, t2.small (2 GB RAM, 1.9 GB free disk, 79% used), 3.109.250.55, ap-south-1. Reachable through SSM |
+| Not part of this site | `sitevision-prod` and `anviksha-app-prod` (other EC2 instances), the `anviksha-*` and `sitevision-*` ECR repositories, and the shared `AnvikshaEC2Role`. **None of these may be changed** |
+| Stack | Docker Compose project `sitesurelabs` in `/home/ubuntu/sitesurelabs` (clone of `github.com/siva767676/sitesurelabs`, branch `main`, HEAD `82f0847`). Containers `sitesurelabs-web-1` (published on port 8080, healthy) and `sitesurelabs-api-1` (healthy). Images are built on the host itself (`sitesurelabs-web:latest`, `sitesurelabs-api:latest`), **not** pulled from ECR |
+| Data | Docker volume `sitesurelabs_data` (SQLite enquiries). Must never be removed or recreated |
+| TLS | Host nginx (`/etc/nginx/sites-enabled/sitesurelabs.conf`, certbot) proxies `sitesurelabs.com` and `www.sitesurelabs.com` to `127.0.0.1:8080`. HTTP redirects to HTTPS. The certificate covers both names. **No HSTS and no www redirect yet** (owner action) |
+| `.env` | Holds secrets (salt, SMTP, admin token). Never printed or copied. `VITE_TURNSTILE_SITE_KEY` is empty in production, so the image is built with an empty key (as today) |
+| Instance role | `AnvikshaEC2Role` can pull only the `anviksha-*` images, so the host cannot pull `sitesurelabs-*` images without a change or a temporary token |
+
+## 14. Deployment plan (nothing here has been executed)
+
+Principles: change only the web container; leave the API container, the data volume, the host nginx, the `.env` and all other servers alone; keep a one-command rollback.
+
+**A. Build and verify the images (needs the decision in the update at the top)**
+
+1. Package the exact committed code (`git archive` of the commit) into the private bucket.
+2. Run a CodeBuild project (dedicated role, push access to the two `sitesurelabs-*` repositories only). `buildspec.yml` builds both images, runs `nginx -t` and the full status and redirect matrix (section 3.1 above, including the 13-URL sitemap check) against the new frontend image, and **pushes to ECR only if every check passes**. Images are tagged with the git commit and `latest`.
+
+Alternatives if the role is not approved: (1) build on the production host with `docker compose build web` as has always been done (works today, but a node build on a 2 GB, 79%-full server is the riskiest option and gives no ECR image), or (2) build on a machine with Docker and push to ECR from there.
+
+**B. Deploy only the web container (about 5 seconds of change)**
+
+1. Record the current image: `docker inspect sitesurelabs-web:latest --format '{{.Id}}'` (currently `sha256:d4243c9a...`) and tag it `sitesurelabs-web:pre-seo` (rollback copy).
+2. Pull the new frontend image (a short-lived, pull-only token for the two new repositories; no change to the shared role), tag it `sitesurelabs-web:latest`, remove the stored token.
+3. Start it on a spare port first and run the matrix once more against the real host.
+4. `docker compose up -d --no-build --no-deps web` recreates only `web`. The API container and volume are untouched.
+5. Verify: container healthy; `curl` the matrix through the host nginx; public HTTPS checks; contact form still reaches the API.
+
+**C. Rollback (seconds)**: `docker tag sitesurelabs-web:pre-seo sitesurelabs-web:latest && docker compose up -d --no-build --no-deps web`. Because the compose file and `.env` are not edited, there is nothing else to undo.
+
+**D. After deploy**: PageSpeed run, structured-data validators, then the owner's HSTS and www redirect (snippets in `SEO_DEPLOYMENT_CHECKLIST.md`, section 1).
+
+**What stays the same in production**: `docker-compose.yml`, `.env`, the API container and its image, the data volume, the host nginx and certificates, and every other server.

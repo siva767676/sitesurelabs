@@ -2,7 +2,7 @@
 
 > **How to read status in these SEO documents.** **Implemented in code** = on branch `feature/sitesurelabs-seo-implementation`, uncommitted, **not deployed and not live** on sitesurelabs.com. **Owner action** = needs you: an account, an approval, a fact only the company knows, or access to the live server. **External activity** = outreach, listings, directory or social accounts, paid tools, third-party validators: **none of it has been done**, and nothing is claimed as done. Authoritative status of all 16 workstreams: `SEO_FINAL_REVIEW.md`.
 
-Status: blog infrastructure and three articles are **implemented in code but not live**, and the three articles are **pending product-team approval** (each is marked `review: 'pending'` in `frontend/src/data/articles.ts`). Nothing is published until you approve the branch and the product teams approve the articles.
+Status: blog infrastructure and three articles **implemented, approved by the owner on 2026-11-04, and not yet live** (they go live when the build is deployed). Each is `review: 'approved'`; the review gate remains for any future article. Product-team confirmation of four statements is still open (`SEO_BLOG_CONTENT_REVIEW.md`).
 Keyword targets and URL mapping live in `SEO_KEYWORD_STRATEGY.md`; this file covers how content is built and run.
 
 ## 1. What existed before
