@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState, type CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
@@ -98,34 +98,22 @@ export function Hero() {
 
             {/* On a phone this paragraph is the largest thing painted (the LCP), so it is there from the first paint:
                 the headline, buttons and strip carry the entrance. */}
-            <motion.p
-              className="t-lead mt-9 max-w-[52ch] text-[var(--color-muted)]"
-              initial={reduced || mobile ? false : { opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: ease.out, delay: 0.55 }}
-            >
+            <p className="t-lead enter-rise-md mt-9 max-w-[52ch] text-[var(--color-muted)]" style={{ '--enter-delay': '0.55s' } as CSSProperties}>
               SiteSureLabs builds AI products for real estate developers, construction companies and project teams: inspection, quality management, site monitoring and digital project visibility, plus custom enterprise AI.
-            </motion.p>
+            </p>
 
-            <motion.div
-              className="mt-8 grid gap-3 sm:mt-9 sm:flex sm:flex-wrap sm:items-center sm:gap-4"
-              initial={reduced ? false : { opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: ease.out, delay: 0.7 }}
-            >
+            <div className="enter-rise mt-8 grid gap-3 sm:mt-9 sm:flex sm:flex-wrap sm:items-center sm:gap-4" style={{ '--enter-delay': '0.7s' } as CSSProperties}>
               <Button to="/products" variant="primary" arrow magnetic className="w-full sm:w-auto">Explore Our Products</Button>
               <Button to="/contact?type=demo" variant="secondary" className="w-full sm:w-auto">Request a Demo</Button>
-            </motion.div>
+            </div>
           </div>
         </div>
 
         {/* product strip: tells the visitor what exists, in the first viewport */}
-        <motion.nav
+        <nav
           aria-label="Our products"
-          className={`mt-8 grid grid-cols-2 border-t border-[var(--color-line)] sm:mt-10 lg:mt-12 ${liveProducts.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4'}`}
-          initial={reduced ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9, duration: 0.9 }}
+          style={{ '--enter-delay': '0.9s' } as CSSProperties}
+          className={`enter-fade mt-8 grid grid-cols-2 border-t border-[var(--color-line)] sm:mt-10 lg:mt-12 ${liveProducts.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4'}`}
         >
           {liveProducts.map((p) => (
             <Link key={p.slug} to={`/products/${p.slug}`} className="group flex min-h-[72px] items-center justify-between gap-4 border-r border-[var(--color-line)] px-2 py-4 transition-colors first:pl-0 last:border-r-0 hover:text-[var(--color-accent)] max-lg:nth-[-n+2]:border-b max-lg:even:border-r-0 max-lg:odd:pl-0 sm:min-h-[88px] sm:px-6 sm:py-5 sm:first:pl-0">
@@ -137,7 +125,7 @@ export function Hero() {
               <ArrowUpRight aria-hidden="true" className="hidden shrink-0 text-[var(--color-muted)] transition-transform sm:block duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[var(--color-accent)]" size={20} />
             </Link>
           ))}
-        </motion.nav>
+        </nav>
       </div>
     </section>
   )

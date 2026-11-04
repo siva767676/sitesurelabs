@@ -621,3 +621,19 @@ html.theme-fade, html.theme-fade *, html.theme-fade *::before, html.theme-fade *
 
 @property --angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 @keyframes spin-angle { to { --angle: 360deg; } }
+
+/* Entrance animations for above-the-fold content. They are CSS, not JavaScript, so they run from the first paint: the
+   prerendered text is visible straight away and the page does not wait for scripts to hydrate before it shows its headline
+   (that wait made the largest paint, LCP, several seconds later on phones). */
+@keyframes rise-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes glyph-up { from { opacity: 0; transform: translateY(112%) rotate(3deg); } to { opacity: 1; transform: none; } }
+@keyframes word-up { from { opacity: 0; transform: translateY(112%); } to { opacity: 1; transform: none; } }
+.enter-rise { animation: rise-in 0.9s var(--ease-out) var(--enter-delay, 0s) both; }
+.enter-fade { animation: fade-in 0.9s ease var(--enter-delay, 0s) both; }
+/* The hero paragraph is the largest paint on a phone, so it is simply there; it only rises in from tablet width up. */
+.enter-rise-md { animation: rise-in 0.9s var(--ease-out) var(--enter-delay, 0s) both; }
+@media (max-width: 767px) { .enter-rise-md { animation: none; } }
+.tr-glyph { display: inline-block; animation: glyph-up 0.9s var(--ease-out) var(--d, 0s) both; }
+.tr-word { display: inline-block; animation: word-up 0.9s var(--ease-out) var(--d, 0s) both; }
+@media (prefers-reduced-motion: reduce) { .enter-rise, .enter-fade, .enter-rise-md, .tr-glyph, .tr-word { animation: none; } }

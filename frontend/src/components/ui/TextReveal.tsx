@@ -1,4 +1,4 @@
-import { Fragment, useMemo } from 'react'
+import { Fragment, useMemo, type CSSProperties } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { dur, ease, stagger } from '@/design/tokens'
 
@@ -47,6 +47,47 @@ export function TextReveal({ lines, as = 'h2', id, className = '', by = 'word', 
   const plain = lines.map((l) => l.replace(/\*/g, '')).join(' ')
   const parsed = useMemo(() => lines.map(parse), [lines])
 
+  const step = by === 'char' ? stagger.char : stagger.word
+  const label = decorative ? { 'aria-hidden': true as const } : as === 'span' ? {} : { 'aria-label': plain }
+
+  // Above-the-fold headings: CSS animation (see .tr-glyph / .tr-word in global.css). The text is visible in the prerendered
+  // HTML and animates from the first paint without waiting for JavaScript; reduced motion is handled in CSS, so the markup
+  // is identical on the server and in the browser.
+  if (immediate) {
+    const Static = as
+    let k = 0
+    return (
+      <Static id={id} className={className} {...label}>
+        {as === 'span' && !decorative && <span className="sr-only">{plain}</span>}
+        <span aria-hidden="true" className="block">
+          {parsed.map((words, li) => (
+            <span key={li} className="block">
+              {li > 0 && ' '}
+              {words.map((word, wi) => (
+                <Fragment key={wi}>
+                  <span className="inline-block overflow-hidden align-top" style={{ paddingBlock: '0.1em', marginBlock: '-0.1em' }}>
+                    <span className="inline-block whitespace-nowrap">
+                      {by === 'char'
+                        ? word.flatMap((t) => Array.from(t.text).map((ch) => ({ ch, accent: t.accent }))).map((c, ci) => (
+                            <span key={ci} className={`tr-glyph ${c.accent ? 'text-[var(--color-accent-display)]' : ''}`} style={{ '--d': `${delay + k++ * step}s` } as CSSProperties}>{c.ch}</span>
+                          ))
+                        : (
+                            <span className="tr-word" style={{ '--d': `${delay + k++ * step}s` } as CSSProperties}>
+                              {word.map((t, ti) => (<span key={ti} className={t.accent ? 'text-[var(--color-accent-display)]' : ''}>{t.text}</span>))}
+                            </span>
+                          )}
+                    </span>
+                  </span>
+                  {wi < words.length - 1 ? ' ' : null}
+                </Fragment>
+              ))}
+            </span>
+          ))}
+        </span>
+      </Static>
+    )
+  }
+
   if (reduced) {
     const Plain = as
     return (
@@ -65,7 +106,6 @@ export function TextReveal({ lines, as = 'h2', id, className = '', by = 'word', 
   }
 
   let n = 0
-  const step = by === 'char' ? stagger.char : stagger.word
   // The trigger lives on the (unclipped) root: IntersectionObserver treats children hidden inside
   // overflow:hidden masks as invisible, so they must inherit the state instead of observing themselves.
   const trigger = immediate
