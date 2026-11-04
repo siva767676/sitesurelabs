@@ -1,4 +1,7 @@
-# Image build definition (prepared, not yet applied)
+# CodeBuild definition (prepared, NOT needed and not applied)
+
+The images were instead built and pushed from a machine with Docker Desktop (see `docs/SEO_PRODUCTION_READINESS.md`). This folder is kept only as an alternative; `deploy/verify-image-matrix.sh` is the check that was run.
+
 
 Builds the SiteSureLabs frontend and backend images, verifies the frontend image, and pushes both to ECR only if every
 check passes. **Nothing in this folder has been applied to AWS.**

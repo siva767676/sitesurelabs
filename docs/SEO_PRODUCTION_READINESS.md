@@ -18,16 +18,16 @@ The owner approved the three articles and asked for the remaining work, image bu
 | Demo videos | **Done**: 720p copies (44 to 55% smaller, 26 MB against 47 MB) used on phones and data-saver; originals kept; fallback to the original if a 720p file fails |
 | SSL certificate for `www` | **Verified**: the certificate covers both `sitesurelabs.com` and `www.sitesurelabs.com` (valid to 27 Jan 2027) |
 | Backend | Identical to what production runs (no diff against `82f0847`), so the API container does not need replacing |
-| Docker image build, `nginx -t`, status matrix | **Not yet run.** No Docker is available on the development machine. A build definition that does all three is prepared (see section 14) but needs permission to create a build role (below) |
-| ECR images | **Not pushed.** Empty repositories `sitesurelabs-frontend` and `sitesurelabs-backend` and a private bucket `sitesurelabs-build-src-196338354246` were created (all new, nothing shared with other products) |
-| Deployment to production | **Not done.** Waiting on the decision below |
+| Docker image build, `nginx -t`, status matrix | **Done and passed (2026-11-04).** Docker Desktop was installed after all (in the user profile) and was started. Both images built from a clean export of commit `7fe11b6`; `nginx -t` is OK; the matrix (`deploy/verify-image-matrix.sh`) passed **65 of 65 checks**: all 16 routes, every redirect (`/about/`, `/about/index.html`, `/index.html`, query kept, `/products/sitevision` in one hop), real 404s, security headers on pages, `/assets`, `/media` and `/api`, the 13-URL sitemap. The strict review gate is in the image build; the backend smoke test passed |
+| ECR images | **Pushed.** `sitesurelabs-frontend:7fe11b6323fd` and `:latest` = `sha256:0463410560ef1c5d7d53c69692d2519a6ed0e313842ac5391895d281243f9f07` (matches the tested local image); `sitesurelabs-backend:7fe11b6323fd` and `:latest` = `sha256:3a7c7d2876fc7be522da98b321cd0db252491d6fc16ad30832d225b0355a1687`. The temporary login was removed from this machine. The S3 bucket and the CodeBuild definition turned out to be unnecessary and are not used |
+| Deployment to production | **Not done. One step is blocked:** getting the image onto the production host. The rollback tag `sitesurelabs-web:pre-seo-20261104` (image `d4243c9ab6be`) was created on the host; nothing else there was changed. See the options at the end of section 14 |
 | HSTS and www to apex redirect on the host nginx | Owner action (the owner said they will do these after the deploy). Not touched |
 | Privacy and Terms | Still `noindex` and out of the sitemap, pending legal review |
 | Real phone testing | Owner action |
 | Rich Results Test, Schema.org Validator | After deploy |
 | Stage 4 analytics | Not started: needs the GA4 ID and the consent decision |
 
-**What is blocking the image build.** There is no Docker on the development machine and the production host is small (2 GB RAM, 1.9 GB free disk), so the images need a proper build environment. The safe way is a short-lived AWS CodeBuild project with its own role limited to the two new repositories and the private bucket. **Creating that role was blocked by the permission check, correctly, because it grants new access in the AWS account. It needs the owner's explicit go-ahead.** Alternatives are in section 14.
+**What is blocking the deployment.** The host's role (`AnvikshaEC2Role`, shared with other products) can only pull the other products' images, and it has no AWS CLI. To pull `sitesurelabs-*` images it needs a pull credential. The two safe ways of providing one (a temporary encrypted Parameter Store entry, or a new role) were blocked by the permission check as credential and permission changes, correctly, so they need the owner's explicit decision. Options are at the end of section 14.
 
 Legend: `[x]` verified now, `[ ]` not done, **[OWNER]** needs you, **[SERVER]** needs access to the host server, **[DOCKER]** needs Docker running, **[DEPLOYED]** only possible after deployment.
 
@@ -267,3 +267,11 @@ Alternatives if the role is not approved: (1) build on the production host with 
 **D. After deploy**: PageSpeed run, structured-data validators, then the owner's HSTS and www redirect (snippets in `SEO_DEPLOYMENT_CHECKLIST.md`, section 1).
 
 **What stays the same in production**: `docker-compose.yml`, `.env`, the API container and its image, the data volume, the host nginx and certificates, and every other server.
+
+**Options to get the verified image onto the host (owner to choose):**
+
+1. **Approve a temporary pull credential** (a short-lived encrypted Parameter Store entry holding an ECR pull token, deleted right after the pull). Then: pull `sitesurelabs-frontend@sha256:0463410560ef...`, run it on a spare port next to production, run the matrix on the host, swap only the web container, verify, keep the rollback tag.
+2. **Build on the host** from the committed code (how it has always been deployed: `git fetch`, check out `7fe11b6`, `docker compose build web`, then the same spare-port check and swap). No credential is involved, but the image would be a rebuild (not byte-identical to the one in ECR), and a node build on a 2 GB server that is 79% full carries some risk to the running site.
+3. **Transfer the image as a file**: save it locally, upload it to a private, expiring location and download it on the host with a time-limited link (this would use the S3 bucket created earlier).
+
+Production is unchanged until one is chosen.
