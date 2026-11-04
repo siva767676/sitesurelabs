@@ -78,14 +78,14 @@ export default function About() {
           <div className="grid-12 gap-y-10">
             <div className="col-span-12 lg:col-span-4">
               <h2 id="team-t" className="t-label mb-8">Founder</h2>
-              <h3 className="t-h2">Amod Jupally</h3>
-              <p className="t-label mt-4 text-[var(--color-accent)]">Founder & CEO, SiteSureLabs</p>
+              <h3 className="t-h2">Amod Rao Jupally</h3>
+              <p className="t-label mt-4 text-[var(--color-accent)]">Founder & CEO, SiteSure Labs</p>
             </div>
             <Reveal className="col-span-12 lg:col-span-7 lg:col-start-6 lg:pt-[3.75rem]">
-              {/* CONFIRM with the founder before adding more: founding year, prior roles, affiliations and credentials were removed
-                  because they were not sourced. Add them back only with the founder's written sign-off. */}
-              <p className="t-lead !max-w-none !text-[var(--c-fg)]">SiteSureLabs is led by its founder, Amod Jupally, and is driven by a vision to bridge the gap between artificial intelligence and real-world industry challenges.</p>
-              <p className="t-body mt-6 max-w-[62ch]">At SiteSureLabs he leads the development of intelligent solutions designed to help businesses improve quality, enhance operational efficiency, and embrace technological advancement.</p>
+              <p className="t-lead !max-w-none !text-[var(--c-fg)]">Amod Rao Jupally is the Founder and CEO of SiteSure Labs, an AI venture founded in 2025 to transform construction through artificial intelligence, computer vision, and robotics. Growing up around My Home Group’s large-scale construction projects in Hyderabad, Amod witnessed firsthand the challenges of quality control, site monitoring, workforce visibility, and material reconciliation.</p>
+              <p className="t-body mt-6 max-w-[62ch]">After gaining hands-on experience building AI automation and agentic workflows, Amod set out to translate these technologies into practical solutions for the construction industry. He founded SiteSure Labs to bridge the gap between emerging AI capabilities and the operational realities of construction sites.</p>
+              <p className="t-body mt-4 max-w-[62ch]">Under his leadership, the team has developed four AI-powered tools—Anviksha, SiteVision, Digi Reco, and Parichay—designed to address real-world construction challenges. Developed and refined through feedback from site teams, these solutions are deployed across My Home Constructions sites, bringing AI into everyday construction operations.</p>
+              <p className="t-body mt-8 max-w-[62ch] border-l-2 border-[var(--color-accent)] pl-5 !text-[var(--c-fg)]">Amod’s vision is to make construction more intelligent, measurable, and accountable by combining AI-driven inspection, visual intelligence, and automation. Through SiteSure Labs, he aims to build a future where construction quality is continuously monitored, operational decisions are grounded in reliable data, and technology works seamlessly alongside the people building our cities.</p>
             </Reveal>
             <div className="col-span-12 border-t border-[var(--c-line)] pt-8">
               <h3 className="t-label mb-5">Focus Areas</h3>

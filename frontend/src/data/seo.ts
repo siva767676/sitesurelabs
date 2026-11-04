@@ -32,13 +32,13 @@ export const staticPages: PageSeo[] = [
   {
     path: '/products',
     title: 'Products for Construction',
-    description: 'Anviksha, SiteVision, Digi Reco and Parichay: products from SiteSureLabs for construction quality inspection, 360° site capture, steel reconciliation and worker entry passes.',
+    description: 'Anviksha, SiteVision, Digi Reco and Parichay: construction products for quality inspection, 360° site capture, steel reconciliation and worker entry passes.',
     index: true,
   },
   {
     path: '/services',
     title: 'AI & Engineering Services',
-    description: 'SiteSureLabs is a technology partner for custom AI: computer vision, document processing and OCR, LLM applications and RAG, AI agents, custom software and AI infrastructure.',
+    description: 'SiteSureLabs is a technology partner for custom AI: computer vision, document OCR, LLM apps and RAG, AI agents, custom software and AI infrastructure.',
     index: true,
   },
   {

@@ -280,7 +280,7 @@ test('private surfaces are not in any page: no admin, login or API links', () =>
 
 test('claims the business has not verified are absent from every page', () => {
   // Remove an entry here only after the owner has verified the claim and its source (see docs/SEO_AUDIT_AND_IMPLEMENTATION.md).
-  const unverified = ['150+', '10,000+', '80,800', '100% traceability', '23,538', '1,238', '2.5%', 'Promoter Group', 'Maha Cement', 'My Home Constructions', 'Founded in 2025']
+  const unverified = ['150+', '10,000+', '80,800', '100% traceability', '23,538', '1,238', '2.5%', 'Promoter Group', 'Maha Cement']  // founder bio details were supplied by the founder (commit 812b0d2) and are intentionally live
   for (const p of pages) for (const claim of unverified) assert.ok(!html[p.path].includes(claim), `${p.path} contains the unverified claim "${claim}"`)
 })
 
@@ -308,5 +308,15 @@ test('approved articles are public: indexable, in the sitemap, the blog list, th
     assert.ok(!html[path].includes('DRAFT, pending review'), `${path}: draft banner still shown`)
     assert.ok(html['/blog'].includes(`href="${path}"`), `/blog does not list ${path}`)
     assert.ok(llms.includes(`${site.url}${path}`), `${path}: missing from llms.txt`)
+  }
+})
+
+test('every product demo video has its 720p twin (the video dialog uses it on phones)', async () => {
+  const { products } = await import(pathToFileURL(entry).href)
+  for (const p of products.filter((x) => x.media.demoVideo)) {
+    const small = p.media.demoVideo.replace('-demo.mp4', '-demo-720.mp4')
+    assert.notEqual(small, p.media.demoVideo, `${p.slug}: demo video name does not follow name-demo.mp4`)
+    assert.ok(existsSync(join(dist, small)), `${p.slug}: ${small} is missing`)
+    assert.ok(existsSync(join(dist, p.media.demoVideo)), `${p.slug}: original video missing`)
   }
 })

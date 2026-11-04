@@ -4,16 +4,32 @@ import { Layout } from '@/components/layout/Layout'
 import { Boundary, ErrorState, RouteFallback } from '@/components/ui/States'
 import Home from '@/pages/Home'
 
+// A route's script can fail to download (a connection drop, or a page tab left open across a redeploy). lazy() keeps that
+// failure for good, so every later visit to the route would fail too. Reload once to start clean; if it fails again, the
+// error state shows and the other pages keep working.
+const load = <T,>(importer: () => Promise<T>) => () =>
+  importer().catch((e: unknown) => {
+    try {
+      const last = Number(sessionStorage.getItem('ssl-route-reload') ?? 0)
+      if (Date.now() - last > 15_000) {
+        sessionStorage.setItem('ssl-route-reload', String(Date.now()))
+        window.location.reload()
+        return new Promise<never>(() => {})
+      }
+    } catch { /* storage blocked: show the error state */ }
+    throw e
+  })
+
 // Home is eager (first paint); everything else is split per route.
-const Products = lazy(() => import('@/pages/Products'))
-const ProductDetail = lazy(() => import('@/pages/ProductDetail'))
-const Services = lazy(() => import('@/pages/Services'))
-const About = lazy(() => import('@/pages/About'))
-const Contact = lazy(() => import('@/pages/Contact'))
-const Blog = lazy(() => import('@/pages/Blog'))
-const Article = lazy(() => import('@/pages/Article'))
-const Legal = lazy(() => import('@/pages/Legal'))
-const NotFound = lazy(() => import('@/pages/NotFound'))
+const Products = lazy(load(() => import('@/pages/Products')))
+const ProductDetail = lazy(load(() => import('@/pages/ProductDetail')))
+const Services = lazy(load(() => import('@/pages/Services')))
+const About = lazy(load(() => import('@/pages/About')))
+const Contact = lazy(load(() => import('@/pages/Contact')))
+const Blog = lazy(load(() => import('@/pages/Blog')))
+const Article = lazy(load(() => import('@/pages/Article')))
+const Legal = lazy(load(() => import('@/pages/Legal')))
+const NotFound = lazy(load(() => import('@/pages/NotFound')))
 
 export default function App() {
   return (

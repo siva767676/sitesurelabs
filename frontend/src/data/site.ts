@@ -8,7 +8,7 @@ export const site = {
   description:
     'SiteSureLabs builds AI-powered construction technology and enterprise software that improve construction inspection, project visibility, operational efficiency and digital transformation.',
   // CONFIRM: real contact mailbox. Placeholder until the domain mailbox exists.
-  email: 'hello@sitesurelabs.com',
+  email: 'support@sitesurelabs.com',
   // CONFIRM: registered address / city. Intentionally omitted until provided.
   address: null as string | null,
   // CONFIRM: social profile URLs. Left empty so no dead links are rendered.

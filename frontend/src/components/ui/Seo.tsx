@@ -29,19 +29,22 @@ export function Seo({ title, description, path, image = '/og-image.png', noindex
       <title>{full}</title>
       <meta name="description" content={description} />
       {canonical && <link rel="canonical" href={url} />}
-      {hidden && <meta name="robots" content="noindex, nofollow" />}
+      {hidden ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
       <meta property="og:type" content={type} />
       {type === 'article' && published && <meta property="article:published_time" content={published} />}
       {type === 'article' && (modified ?? published) && <meta property="article:modified_time" content={modified ?? published} />}
       <meta property="og:site_name" content={site.name} />
+      <meta property="og:locale" content="en_IN" />
       <meta property="og:title" content={full} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={url} />
       <meta property="og:image" content={img} />
+      <meta property="og:image:alt" content={site.tagline} />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={full} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={img} />
+      <meta name="twitter:image:alt" content={site.tagline} />
       {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
     </>
   )
