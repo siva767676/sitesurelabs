@@ -172,7 +172,7 @@ test('home has Organization + WebSite; inner pages have BreadcrumbList; products
     assert.ok(t.includes('SoftwareApplication'), `${p.path}: SoftwareApplication`)
     const video = nodes(html[p.path]).find((n) => n['@type'] === 'VideoObject')
     assert.ok(video, `${p.path}: VideoObject`)
-    assert.match(video.uploadDate, /^\d{4}-\d{2}-\d{2}$/)
+    assert.match(video.uploadDate, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/, `${p.path}: VideoObject uploadDate needs a date, time and timezone`)
     assert.ok(existsSync(join(dist, video.contentUrl.replace(site.url, ''))), `${p.path}: video file missing`)
   }
   for (const p of pages.filter((x) => x.path.startsWith('/blog/'))) {

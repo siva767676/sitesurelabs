@@ -46,7 +46,7 @@ export interface Product {
     coverAlt: string
     shots: Shot[]
     demoVideo?: string
-    /** YYYY-MM-DD the demo video was first added to the site (git history). Used for VideoObject structured data. */
+    /** ISO 8601 date, time and timezone the demo video was first added to the site (git history). Used for VideoObject uploadDate; Google asks for the timezone. */
     demoVideoAdded?: string
     /** CSS object-position used when cropping the cover. */
     focus?: string
@@ -111,7 +111,7 @@ export const products: Product[] = [
       focus: '50% 40%',
       showcase: [0, 3],
       demoVideo: '/media/anviksha-demo.mp4',
-      demoVideoAdded: '2026-10-24',
+      demoVideoAdded: '2026-10-24T14:22:33+05:30',
       shots: [
         { src: still('anviksha-defects'), alt: 'Defects detected and labelled on concrete photographs', caption: 'Defects located and labelled' },
         { src: still('anviksha-collection'), alt: 'Anviksha inspection screen showing a location details form', caption: 'Location and category on every capture' },
@@ -179,7 +179,7 @@ export const products: Product[] = [
       focus: '50% 45%',
       showcase: [3, 4],
       demoVideo: '/media/sitevision-demo.mp4',
-      demoVideoAdded: '2026-10-24',
+      demoVideoAdded: '2026-10-24T14:22:33+05:30',
       shots: [
         { src: still('sitevision-floorplan'), alt: 'Floor plan with labelled capture points', caption: 'The floor plan becomes the map' },
         { src: still('sitevision-capture'), alt: 'SiteVision New Capture screen to select a project', caption: 'Field capture, project by project' },
@@ -246,7 +246,7 @@ export const products: Product[] = [
       focus: '50% 20%',
       showcase: [0, 4],
       demoVideo: '/media/digireco-demo.mp4',
-      demoVideoAdded: '2026-10-24',
+      demoVideoAdded: '2026-10-24T14:22:33+05:30',
       shots: [
         { src: still('digireco-abstract'), alt: 'Monthly steel abstract with cross-check warnings', caption: 'Monthly steel abstract' },
         { src: still('digireco-bulk'), alt: 'Bulk import preview showing rows ready to commit', caption: 'Bulk import, reviewed before commit' },
@@ -314,7 +314,7 @@ export const products: Product[] = [
       focus: '50% 50%',
       showcase: [3, 5],
       demoVideo: '/media/parichay-demo.mp4',
-      demoVideoAdded: '2026-10-24',
+      demoVideoAdded: '2026-10-24T14:22:33+05:30',
       shots: [
         { src: still('parichay-register'), alt: 'Parichay registration form with personal details and the batch queue of passes beside it', caption: 'Three-step registration' },
         { src: still('parichay-photo'), alt: 'Parichay photo capture step, with the worker’s photo taken at the gate', caption: 'Photo taken at the gate' },
