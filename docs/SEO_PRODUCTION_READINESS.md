@@ -187,7 +187,7 @@ Nothing in the legal text was changed. Findings from `frontend/src/pages/Legal.t
 | **"[Retention period to be confirmed.]"** | Privacy, Retention | Placeholder |
 | **"[Governing law and jurisdiction to be confirmed.]"** | Terms, Governing law | Placeholder |
 | Company legal name and registered address | not stated in either document | Missing (code comment says they must be confirmed) |
-| Contact email `hello@sitesurelabs.com` | both, via `site.email` | Marked a placeholder in `site.ts` until the mailbox exists |
+| Contact email `mhcai@myhomeconstructions.com` | both, via `site.email` | Confirmed by the owner 2026-11-09. Legal should confirm that this address is the one to publish in the policies |
 | Hosting and email "service providers" | Privacy, Who we share it with | Unnamed; processors to be confirmed (code comment) |
 | "This website does not set advertising cookies. If analytics are added in future, this policy will be updated" | Privacy | **Must be updated before analytics (Stage 4)** |
 | Rights section | Privacy | Generic; not tied to any country's law. Target countries are unknown |
@@ -204,7 +204,7 @@ Nothing in the legal text was changed. Findings from `frontend/src/pages/Legal.t
 5. Make the Rights section match the laws that apply to the target countries (not yet decided).
 6. Add analytics wording, a consent description and a cookie description before any analytics goes live (Stage 4).
 7. Decide how Parichay worker data is covered (separately from this website policy).
-8. Confirm the contact email (`hello@sitesurelabs.com` is marked a placeholder).
+8. ~~Confirm the contact email~~ Done: `mhcai@myhomeconstructions.com` (owner, 2026-11-09).
 
 **When the policies are final:** remove the "Draft, pending legal review" label and the draft banner, set a real "last updated" date, set `index: true` for `/privacy` and `/terms` in `seo.ts`, rebuild, and update the SEO tests (the Privacy/Terms test and the sitemap count of 9 become 11).
 

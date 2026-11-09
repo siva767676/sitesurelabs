@@ -7,8 +7,9 @@ export const site = {
   tagline: 'Intelligence engineered for the real world.',
   description:
     'SiteSureLabs builds AI-powered construction technology and enterprise software that improve construction inspection, project visibility, operational efficiency and digital transformation.',
-  // CONFIRM: real contact mailbox. Placeholder until the domain mailbox exists.
-  email: 'support@sitesurelabs.com',
+  // Public contact address, confirmed by the owner 2026-11-09. Shown in the footer, on the Contact page and in the legal pages.
+  // (Where enquiry-form notifications are sent is a separate server setting, NOTIFY_TO in the server's .env.)
+  email: 'mhcai@myhomeconstructions.com',
   // CONFIRM: registered address / city. Intentionally omitted until provided.
   address: null as string | null,
   // CONFIRM: social profile URLs. Left empty so no dead links are rendered.

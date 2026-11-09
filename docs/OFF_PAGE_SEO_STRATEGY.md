@@ -102,7 +102,7 @@ Facts source: `site.ts` (name, URL, description, tagline, email), `products.ts`,
 **Canonical name:** SiteSureLabs (one word, capital S, S, L). Do not write "Site Sure Labs", "SSL" or other variants.
 **Tagline:** Intelligence engineered for the real world.
 **URL:** https://sitesurelabs.com (no trailing path variations, always HTTPS).
-**Email:** hello@sitesurelabs.com. NOTE: `site.ts` marks this as a placeholder "until the domain mailbox exists". Confirm it is live before publishing it anywhere. `[PENDING OWNER INPUT: confirmed public contact email]`.
+**Email:** mhcai@myhomeconstructions.com (confirmed by the owner 2026-11-09 as the public contact address; it is on the website).
 
 ### 25-word description (exactly 25)
 

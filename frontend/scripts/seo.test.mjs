@@ -331,3 +331,9 @@ test('internal links to the guides: home links to every published guide, Anviksh
   }
   assert.ok(!html['/products/anviksha'].includes('href="/blog/360-degree-construction-documentation"'), 'Anviksha should not link to the 360 article')
 })
+
+test('the public contact email is the confirmed one, and no placeholder address is left', () => {
+  for (const p of pages) assert.ok(!/support@sitesurelabs\.com|hello@sitesurelabs\.com/.test(html[p.path]), `${p.path} still shows a placeholder email`)
+  assert.ok(html['/contact'].includes('mailto:mhcai@myhomeconstructions.com'), 'the Contact page must link the confirmed email')
+  assert.ok(html['/'].includes('mailto:mhcai@myhomeconstructions.com'), 'the footer must link the confirmed email')
+})

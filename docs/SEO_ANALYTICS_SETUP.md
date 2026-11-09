@@ -83,7 +83,7 @@ Stage 4 does not start until the first two rows are answered. Every row is an **
 | 5 | **Bing Webmaster Tools** access (import from Search Console or verify) | Bing indexing; some AI search products draw on Bing | No |
 | 6 | **Target countries and languages** (for example India only, or global; English only?) | Sets hreflang needs, directory choices, consent law, Search Console international targeting | No |
 | 7 | **Company LinkedIn page and other social profile URLs** | Needed for Organization `sameAs`; none are on the site today and none will be invented | No |
-| 8 | **Confirmed public contact email** (the site uses `hello@sitesurelabs.com`, marked a placeholder in `site.ts`) | Shown on the site, used in profiles, and for contact-point schema | No |
+| 8 | **Confirmed public contact email**: `mhcai@myhomeconstructions.com`, confirmed by the owner 2026-11-09 and now on the website. Not yet in the structured data (contact-point schema can be added on request) | Shown on the site, used in profiles | **Yes** |
 | 9 | **Company legal name, registered address, phone** (if they are to be public) | Privacy policy identity, Organization schema, directories, any Google Business Profile | No |
 | 10 | **Who receives the monthly SEO report**, and who owns Search Console and GA4 day to day | Access and accountability | No |
 
