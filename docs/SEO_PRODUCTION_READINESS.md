@@ -324,3 +324,21 @@ The two rollback tags stay on the server (about 180 MB each; disk is about 80% u
 - The founder bio now live (from `main`) names "My Home Constructions" and says the tools are deployed across its sites; the owner should confirm that wording.
 - Delete the unused S3 bucket `sitesurelabs-build-src-196338354246` (the owner said they will).
 - Stage 4 analytics: needs the GA4 ID and the consent decision.
+
+## 16. Later releases (2026-11-09)
+
+All deployed the same way as section 15 (image built from a clean export of the commit, `nginx -t` and the 65-check matrix passed locally, pushed to ECR, pulled by the server through its own role, verified on a spare port, web container swapped with automatic rollback, matrix passed again on the live port and through the public site). The API container, data volume and `.env` were not touched.
+
+| Release | Commit | Image tag (ECR) | What changed |
+|---|---|---|---|
+| 3 | `1dea309` | `sitesurelabs-frontend:1dea3096c968` (`sha256:c2e861d2...`) | Video `uploadDate` now has date, time and timezone (Search Console warning); guide links on the home page (all three guides) and on the Anviksha page (its two guides) |
+| 4 | `7c3f4b4` | `sitesurelabs-frontend:7c3f4b438b8b` (`sha256:bee12a43...`), **running now** | Public contact email is `mhcai@myhomeconstructions.com` (footer, Contact page, legal pages). Placeholder addresses removed, with a test |
+
+Rollback tags on the server (web image): `seo-v3-1dea3096c968` (release 3, the previous release), `seo-v2-83f594fb4009` (release 2), `seo-v1-7fe11b6323fd` (release 1), `pre-seo-20261104` (the original site). To go back one release:
+`cd /home/ubuntu/sitesurelabs && docker tag sitesurelabs-web:seo-v3-1dea3096c968 sitesurelabs-web:latest && docker compose up -d --no-build --no-deps web`
+
+**Server disk is 86% used (1.3 GB free).** Safe cleanup, none done yet: `docker rmi sitesurelabs-web:seo-v1-7fe11b6323fd sitesurelabs-web:seo-v2-83f594fb4009` (old rollback tags) and `docker builder prune -f` (about 2.9 GB of old build cache).
+
+**Enquiry-form notifications are a separate setting.** The email on the website is only what visitors see and click. Where the Contact form's notifications are sent is the server's `NOTIFY_TO` setting in `/home/ubuntu/sitesurelabs/.env` (and `NOTIFY_FROM`/SMTP). It was not read or changed. If notifications should go to `mhcai@myhomeconstructions.com`, that value must be updated on the server and the API container restarted.
+
+**Search Console:** after release 3, open the Videos report and click Validate fix for the two `uploadDate` warnings.
