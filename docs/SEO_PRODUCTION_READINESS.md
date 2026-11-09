@@ -21,7 +21,7 @@ The owner approved the three articles and asked for the remaining work, image bu
 | Docker image build, `nginx -t`, status matrix | **Done and passed (2026-11-04).** Docker Desktop was installed after all (in the user profile) and was started. Both images built from a clean export of commit `7fe11b6`; `nginx -t` is OK; the matrix (`deploy/verify-image-matrix.sh`) passed **65 of 65 checks**: all 16 routes, every redirect (`/about/`, `/about/index.html`, `/index.html`, query kept, `/products/sitevision` in one hop), real 404s, security headers on pages, `/assets`, `/media` and `/api`, the 13-URL sitemap. The strict review gate is in the image build; the backend smoke test passed |
 | ECR images | **Pushed.** Frontend `:83f594fb4009` / `:latest` = `sha256:304e7ae3e40beacc5063b226ea2ed3894cf1f7c9d3f7d3d60f0c44e33adbd756` (deployed); earlier frontend `:7fe11b6323fd` = `sha256:0463410560ef...` (release 1, kept as a rollback tag on the server). Backend `:7fe11b6323fd` / `:latest` = `sha256:3a7c7d2876fc...` (not deployed: unchanged). The S3 bucket and the CodeBuild definition were not needed |
 | Deployment to production | **Done (2026-11-04).** Web container replaced with the image `sitesurelabs-frontend:83f594fb4009`; API, data and server config untouched; 65 of 65 checks passed on the spare port, the live port and the public site; live Lighthouse mobile 93 / desktop 95, SEO and accessibility 100. See section 15 |
-| HSTS and www to apex redirect on the host nginx | Owner action (the owner said they will do these after the deploy). Not touched |
+| HSTS and www to apex redirect on the host nginx | **Done 2026-11-09**, applied on the owner's request with a backup, `nginx -t`, automatic restore and a 65-check regression run. Config copy and rollback: `deploy/host-nginx/` |
 | Privacy and Terms | Still `noindex` and out of the sitemap, pending legal review |
 | Real phone testing | Owner action |
 | Rich Results Test, Schema.org Validator | After deploy |
@@ -40,7 +40,7 @@ Legend: `[x]` verified now, `[ ]` not done, **[OWNER]** needs you, **[SERVER]** 
 | Sitemap (**9** indexable URLs: home, products index, services, about, contact, four product pages), robots.txt, structured data parses | `[x]` | No |
 | nginx config syntax and redirect matrix | `[ ]` **[DOCKER]** not run | **Yes** (do before deploy) |
 | Docker image build | `[ ]` **[DOCKER]** not run | **Yes** |
-| HSTS and www redirect on the host server | `[ ]` **[SERVER]** | Not for the first deploy of this branch, but needed for SEO (duplicate host) |
+| HSTS and www redirect on the host server | `[x]` **done 2026-11-09** | No |
 | Certificate covers `www` | `[ ]` **[SERVER]** | Needed before the www redirect works over HTTPS |
 | Real mobile browser test | `[ ]` **[OWNER]** | **Yes** |
 | Core Web Vitals and PageSpeed baseline | `[ ]` **[DEPLOYED]** (or run against a staging URL) | No, but record a baseline |
@@ -126,12 +126,12 @@ Not done. The live server was probed read-only (`curl`) and **not modified**.
 
 Observed 2026-11-04: `http://sitesurelabs.com` 301s to https (good); `https://sitesurelabs.com` returns 200 from nginx 1.24.0 on Ubuntu with **no `Strict-Transport-Security`**; `https://www.sitesurelabs.com` returns a **full 200 page** (duplicate host).
 
-- [ ] **HSTS:** add `add_header Strict-Transport-Security "max-age=31536000" always;` to the HTTPS server block for the apex. Start without `includeSubDomains` and `preload`.
+- [x] **HSTS:** added on 2026-11-09 (`max-age=31536000`, no `includeSubDomains` or `preload`).
 - [ ] **www to apex:** a server block for `www.sitesurelabs.com` on ports 80 and 443 with `return 301 https://sitesurelabs.com$request_uri;`
 - [ ] **Certificate covers both names**; check with
   `openssl s_client -connect www.sitesurelabs.com:443 -servername www.sitesurelabs.com </dev/null | openssl x509 -noout -ext subjectAltName`
   The output must list both `sitesurelabs.com` and `www.sitesurelabs.com` (or a matching wildcard). If not, reissue the certificate first, or the redirect from `https://www` will show a certificate warning.
-- [ ] After the change: `curl -sI https://www.sitesurelabs.com` shows one 301 to `https://sitesurelabs.com/`, and `curl -sI https://sitesurelabs.com` shows the HSTS header.
+- [x] After the change (verified from outside 2026-11-09): `https://www.sitesurelabs.com/...` and `http://www...` give one 301 to `https://sitesurelabs.com/...` (path and query kept, 1 hop); the main host sends the HSTS header.
 - [ ] Keep `proxy_set_header X-Forwarded-Proto $scheme;` toward the container. Do not duplicate the container's security headers at the host.
 
 ## 5. Mobile layout testing  **[OWNER]**
@@ -314,7 +314,8 @@ The two rollback tags stay on the server (about 180 MB each; disk is about 80% u
 
 **Still open (not done, owner or later):**
 
-- HSTS and the www to apex redirect on the host nginx (the owner said they will do these; snippets in `SEO_DEPLOYMENT_CHECKLIST.md`). `www.sitesurelabs.com` still serves a duplicate page.
+- ~~HSTS and the www to apex redirect on the host nginx~~ **Done 2026-11-09.** In Search Console, Google had been crawling `www` as a second host (about a third of impressions); expect that to consolidate onto `sitesurelabs.com` over the next weeks.
+- Deploy the video `uploadDate` fix (commit `d00f296`, pushed, **not yet deployed**), then click Validate fix in Search Console's Videos report.
 - Real iPhone and Android testing.
 - Google Rich Results Test and Schema.org Validator on the live URLs (they have no API).
 - Search Console and Bing: verify, submit `https://sitesurelabs.com/sitemap.xml`, request indexing.

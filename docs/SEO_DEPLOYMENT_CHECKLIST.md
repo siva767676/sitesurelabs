@@ -116,3 +116,7 @@ These need server access, accounts or tools that are not part of this repository
 - [ ] GA4 ID and a consent decision (`SEO_ANALYTICS_SETUP.md`).
 - [ ] Owner inputs: verified product metrics, founder details, company address, phone, legal name, social URLs, confirmed contact email, a new `og-image.png` matching the new positioning.
 - [ ] Review of the three articles by the Anviksha and SiteVision teams before publishing.
+
+## 8. Update 2026-11-09: HSTS and www redirect applied
+
+Applied on the production host nginx (not in this repo's container). Copy of the config and the rollback command: `deploy/host-nginx/`. Checked from outside: `https://www.sitesurelabs.com/...` and `http://www...` give one 301 to `https://sitesurelabs.com/...` (path and query kept, 1 hop); the main host sends `Strict-Transport-Security: max-age=31536000`; the certificate covers both names; both containers untouched; the 65-check matrix passed against the public site.
