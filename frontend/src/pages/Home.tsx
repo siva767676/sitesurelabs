@@ -5,6 +5,8 @@ import { Hero } from '@/components/home/Hero'
 import { ProductScroll } from '@/components/home/ProductScroll'
 import { RobotDog } from '@/components/home/RobotDog'
 import { WhySure } from '@/components/home/WhySure'
+import { GuideLinks } from '@/components/ui/GuideLinks'
+import { articles } from '@/data/articles'
 import { Testimonials } from '@/components/ui/Testimonial'
 import { ContactPaths } from '@/components/home/ContactPaths'
 import { BrandClosing } from '@/components/brand/BrandClosing'
@@ -25,6 +27,7 @@ export default function Home() {
       <ProductScroll />
       <RobotDog />
       <WhySure />
+      <GuideLinks id="home-guides-t" title="Guides for construction teams." slugs={articles.map((a) => a.slug)} />
       <Testimonials />
       <ContactPaths />
       <BrandClosing />

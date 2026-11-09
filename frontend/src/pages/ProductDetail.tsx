@@ -12,6 +12,7 @@ import { Accordion } from '@/components/ui/Accordion'
 import { SwipeList } from '@/components/ui/SwipeList'
 import { VideoDialog } from '@/components/ui/VideoDialog'
 import { CtaBand } from '@/components/ui/CtaBand'
+import { GuideLinks } from '@/components/ui/GuideLinks'
 import { getProduct, products } from '@/data/products'
 import { productSchema } from '@/lib/schema'
 import { ease } from '@/design/tokens'
@@ -219,6 +220,8 @@ export default function ProductDetail() {
           </div>
         </div>
       </section>
+
+      {p.guides && <GuideLinks id="guides-t" title={`Guides for ${p.name} users and buyers.`} slugs={p.guides} />}
 
       <CtaBand
         title={planned ? `Interested in ${p.name}?` : `See ${p.name} on your workflow.`}

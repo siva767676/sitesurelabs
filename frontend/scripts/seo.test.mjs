@@ -320,3 +320,14 @@ test('every product demo video has its 720p twin (the video dialog uses it on ph
     assert.ok(existsSync(join(dist, p.media.demoVideo)), `${p.slug}: original video missing`)
   }
 })
+
+test('internal links to the guides: home links to every published guide, Anviksha links to its two', async () => {
+  const { articles } = await import(pathToFileURL(entry).href)
+  for (const a of articles.filter((x) => x.review === 'approved')) {
+    assert.ok(html['/'].includes(`href="/blog/${a.slug}"`), `home does not link to /blog/${a.slug}`)
+  }
+  for (const slug of ['digital-construction-inspection-guide', 'manual-vs-ai-construction-inspection']) {
+    assert.ok(html['/products/anviksha'].includes(`href="/blog/${slug}"`), `/products/anviksha does not link to /blog/${slug}`)
+  }
+  assert.ok(!html['/products/anviksha'].includes('href="/blog/360-degree-construction-documentation"'), 'Anviksha should not link to the 360 article')
+})

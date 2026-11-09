@@ -24,6 +24,8 @@ export interface Product {
   category: string
   /** What the product is, in plain words. It is the first part of the page's H1 (search engines and readers see it with the name). */
   descriptor: string
+  /** Slugs of blog articles about this product's topic. Shown as a "Guides" block on the product page (published ones only). */
+  guides?: string[]
   tagline: string
   /** One sentence: what it does. Shown on the home ecosystem and the details sheet. */
   blurb: string
@@ -71,6 +73,7 @@ export const products: Product[] = [
     index: '01',
     category: 'AI construction inspection',
     descriptor: 'AI construction quality inspection software',
+    guides: ['digital-construction-inspection-guide', 'manual-vs-ai-construction-inspection'],
     tagline: 'See every defect. Fix it faster.',
     blurb: 'Turn site photos into located, rated defect observations and quality reports.',
     summary: 'AI-powered construction quality inspection. Capture a defect, locate it, and get a rated observation and report.',
