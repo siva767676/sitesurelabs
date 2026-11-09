@@ -342,3 +342,17 @@ Rollback tags on the server (web image): `seo-v3-1dea3096c968` (release 3, the p
 **Enquiry-form notifications are a separate setting.** The email on the website is only what visitors see and click. Where the Contact form's notifications are sent is the server's `NOTIFY_TO` setting in `/home/ubuntu/sitesurelabs/.env` (and `NOTIFY_FROM`/SMTP). It was not read or changed. If notifications should go to `mhcai@myhomeconstructions.com`, that value must be updated on the server and the API container restarted.
 
 **Search Console:** after release 3, open the Videos report and click Validate fix for the two `uploadDate` warnings.
+
+## 17. Enquiry e-mail notifications (2026-11-09)
+
+Commit `73bcab9` and earlier. Full guide: [EMAIL_NOTIFICATIONS.md](EMAIL_NOTIFICATIONS.md).
+
+| Item | State |
+|---|---|
+| API image | `sitesurelabs-backend:73bcab962879` (`sha256:affda91adaf3...`), **running now**. Verified first on a spare port with a throwaway database; swapped with automatic rollback; web server reloaded so it re-resolves the API; 65-check matrix passed through the public site; stored-enquiry count (0) and data volume unchanged; web container not touched |
+| API rollback | `cd /home/ubuntu/sitesurelabs && docker tag sitesurelabs-api:pre-notify-20261109 sitesurelabs-api:latest && docker compose up -d --no-build --no-deps api && docker exec sitesurelabs-web-1 nginx -s reload` |
+| Delivery switched on? | **Not yet.** `/api/health` shows `"notifications": false` until SES SMTP credentials are added. Enquiries are stored either way |
+| Script on the server | `/home/ubuntu/enable-email-notifications.sh` (checksum matches `deploy/enable-email-notifications.sh`). Backs up `.env`, writes settings, restarts the API only, sends a test e-mail, restores `.env` if the test fails |
+| SES | ap-south-1, out of the sandbox, domain `sitesurelabs.com` verified. SMTP credentials still to be created by the owner |
+
+This replaces the "Enquiry-form notifications are a separate setting" note in section 16.
