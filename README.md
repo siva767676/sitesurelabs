@@ -53,4 +53,6 @@ npm run dev
 
 Then open **http://localhost:5173**.
 
+**Enquiry e-mails.** The site stores every enquiry and e-mails it to the team (`mhcai@myhomeconstructions.com`). To see those e-mails while developing (nothing real is sent) and to switch delivery on in production with Amazon SES, see [docs/EMAIL_NOTIFICATIONS.md](docs/EMAIL_NOTIFICATIONS.md).
+
 To put the site online, run `docker compose up -d --build` after copying `.env.example` to `.env` and filling it in.

@@ -10,6 +10,7 @@ from .config import Settings, get_settings
 from .db import make_session_factory
 from .errors import register_error_handlers
 from .logging_config import configure_logging
+from .notify import config_problems, notifications_configured
 from .routes import enquiries
 from .security import SlidingWindowLimiter
 
@@ -22,6 +23,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     if settings.is_production and settings.ip_hash_salt == "change-me":
         raise RuntimeError("IP_HASH_SALT must be set to a random value in production.")
+
+    if settings.is_production:  # a silent misconfiguration would store enquiries that nobody ever hears about
+        for problem in config_problems(settings):
+            log.warning("notification settings: %s", problem)
 
     app = FastAPI(
         title="SiteSureLabs API",
@@ -69,7 +74,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         except Exception:  # noqa: BLE001
             log.exception("health check: database unavailable")
             db_ok = False
-        return {"status": "ok" if db_ok else "degraded", "database": db_ok, "env": settings.app_env}
+        return {"status": "ok" if db_ok else "degraded", "database": db_ok, "env": settings.app_env, "notifications": notifications_configured(settings)}
 
     return app
 

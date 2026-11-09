@@ -1,0 +1,19 @@
+# Development helpers (not used in production).
+#
+#   docker compose -f docker-compose.dev.yml up -d mailpit
+#
+# Mailpit is a local mail catcher: it accepts any e-mail on port 1025 and shows it at http://localhost:8025.
+# Nothing is ever delivered to a real mailbox, so you can submit the Contact form freely while developing.
+# Point the API at it with these lines in backend/.env:
+#
+#   NOTIFY_TO=mhcai@myhomeconstructions.com
+#   SMTP_HOST=127.0.0.1
+#   SMTP_PORT=1025
+#   SMTP_STARTTLS=false
+services:
+  mailpit:
+    image: axllent/mailpit:v1.33.1
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8025:8025"   # web UI
+      - "127.0.0.1:1025:1025"   # SMTP
